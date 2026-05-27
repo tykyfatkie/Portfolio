@@ -1,0 +1,277 @@
+/* ============================================================
+   projects.css — Project card styles
+   ============================================================
+
+   HOW TO ADD A NEW PROJECT:
+   1. Mở ProjectsSection.tsx, thêm object vào mảng PROJECTS với:
+        color: "#hexcode"   ← màu chủ đạo của card
+        image: "/images/projects/ten-file.png"  ← (tuỳ chọn)
+   2. Không cần chỉnh CSS — mọi màu sắc được inject tự động
+      qua CSS custom property --proj-color trên mỗi card.
+
+   ============================================================ */
+
+/* ── Card wrapper ─────────────────────────────────────────── */
+.proj-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--glass);
+
+  /* Màu viền lấy từ --proj-color được set inline trong JSX */
+  border: 0.5px solid color-mix(in srgb, var(--proj-color) 12%, transparent);
+
+  transform-style: preserve-3d;
+  cursor: none;
+  transition:
+    border-color 0.4s ease,
+    box-shadow   0.4s ease,
+    transform    0.4s ease;
+}
+
+.proj-card:hover {
+  border-color: color-mix(in srgb, var(--proj-color) 35%, transparent);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.55),
+    0 0 60px color-mix(in srgb, var(--proj-color) 8%, transparent);
+}
+
+/* ── Thumbnail area ───────────────────────────────────────── */
+.proj-thumb {
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Gradient tối dùng --proj-color */
+  background: linear-gradient(
+    135deg,
+    #0a0a0a,
+    color-mix(in srgb, var(--proj-color) 10%, #0a0a0a)
+  );
+}
+
+/* Ảnh demo (nếu có) */
+.proj-thumb__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity  0.4s ease;
+  opacity: 0.75;
+}
+.proj-card:hover .proj-thumb__img {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+/* Overlay gradient trên ảnh để text đọc được */
+.proj-thumb__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    rgba(5, 5, 5, 0.85) 100%
+  );
+  z-index: 1;
+}
+
+/* Grid pattern SVG (hiện khi không có ảnh) */
+.proj-thumb__grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.12;
+  transition: opacity 0.4s;
+}
+.proj-card:hover .proj-thumb__grid {
+  opacity: 0.2;
+}
+
+/* Số watermark */
+.proj-thumb__number {
+  font-family: var(--font-display);
+  font-size: 8rem;
+  line-height: 1;
+  user-select: none;
+  color: color-mix(in srgb, var(--proj-color) 8%, transparent);
+  position: relative;
+  z-index: 0;
+  transition: color 0.4s;
+}
+.proj-card:hover .proj-thumb__number {
+  color: color-mix(in srgb, var(--proj-color) 12%, transparent);
+}
+
+/* Glow orb */
+.proj-thumb__glow {
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--proj-color) 18%, transparent) 0%,
+    transparent 70%
+  );
+  top: 10%;
+  right: 10%;
+  opacity: 0.5;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 1;
+}
+.proj-card:hover .proj-thumb__glow {
+  opacity: 1;
+}
+
+/* Bottom accent line */
+.proj-thumb__line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--proj-color), transparent);
+  opacity: 0.25;
+  transition: opacity 0.4s;
+  z-index: 2;
+}
+.proj-card:hover .proj-thumb__line {
+  opacity: 1;
+}
+
+/* Team badge */
+.proj-thumb__badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--proj-color);
+  border: 0.5px solid color-mix(in srgb, var(--proj-color) 30%, transparent);
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  z-index: 3;
+  backdrop-filter: blur(6px);
+}
+
+/* ── Card body ────────────────────────────────────────────── */
+.proj-body {
+  padding: 1.5rem;
+}
+
+/* Tag */
+.proj-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--proj-color);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+/* Title */
+.proj-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.6rem;
+  color: var(--text);
+  line-height: 1.05;
+}
+
+/* Description */
+.proj-desc {
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.75;
+  font-weight: 300;
+  margin-bottom: 1.25rem;
+}
+
+/* Tech pills */
+.proj-pills {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.proj-pill {
+  padding: 0.18rem 0.55rem;
+  background: color-mix(in srgb, var(--proj-color) 6%, transparent);
+  border: 0.5px solid color-mix(in srgb, var(--proj-color) 22%, transparent);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--proj-color);
+  transition: background 0.3s, border-color 0.3s;
+}
+.proj-pill:hover {
+  background: color-mix(in srgb, var(--proj-color) 14%, transparent);
+  border-color: color-mix(in srgb, var(--proj-color) 45%, transparent);
+}
+
+/* Links */
+.proj-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.proj-link {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.3s;
+  cursor: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.proj-link:hover {
+  color: var(--proj-color);
+}
+
+/* ── "View all" empty state ───────────────────────────────── */
+.proj-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+/* ── Image lightbox (simple CSS-only) ────────────────────── */
+.proj-lightbox-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  cursor: zoom-in;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .proj-thumb {
+    height: 160px;
+  }
+  .proj-thumb__number {
+    font-size: 5rem;
+  }
+  .proj-title {
+    font-size: 1.3rem;
+  }
+}
