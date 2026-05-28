@@ -5,6 +5,7 @@ import AboutSection from "./components/sections/AboutSection";
 import SkillsSection from "./components/sections/SkillsSection";
 import ProjectsSection from "./components/sections/ProjectsSection";
 import ContactSection from "./components/sections/ContactSection";
+import AudioController from "./components/ui/AudioController";
 import { useCursor } from "./hooks/useCursor";
 
 const Footer = () => (
@@ -51,6 +52,7 @@ const App = () => {
         <ContactSection />
       </main>
       <Footer />
+      <AudioController />
     </>
   );
 };

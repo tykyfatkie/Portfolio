@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { playHover, playClick } from "./useSound";
 
 export function useCursor() {
   useEffect(() => {
@@ -25,13 +26,22 @@ export function useCursor() {
     document.addEventListener("mousemove", onMove);
     tick();
 
-    const onEnter = () => { ring.classList.add("hovering"); dot.classList.add("hovering"); };
-    const onLeave = () => { ring.classList.remove("hovering"); dot.classList.remove("hovering"); };
+    const onEnter = () => {
+      ring.classList.add("hovering");
+      dot.classList.add("hovering");
+      playHover();
+    };
+    const onLeave = () => {
+      ring.classList.remove("hovering");
+      dot.classList.remove("hovering");
+    };
+    const onPointerDown = () => playClick();
 
     const attach = () => {
       document.querySelectorAll("a,button,[data-hover]").forEach(el => {
         el.addEventListener("mouseenter", onEnter);
         el.addEventListener("mouseleave", onLeave);
+        el.addEventListener("pointerdown", onPointerDown);
       });
     };
     attach();
