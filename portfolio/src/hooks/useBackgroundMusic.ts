@@ -13,7 +13,7 @@ export function useBackgroundMusic() {
     const audio = audioRef.current;
 
     if (audio.paused) {
-      audio.volume = 1;
+      audio.volume = 0.8;
       audio.play()
         .then(() => setPlaying(true))
         .catch(err => console.error("[music] ✗ failed:", err));

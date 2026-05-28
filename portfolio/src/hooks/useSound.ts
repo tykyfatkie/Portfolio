@@ -31,7 +31,7 @@ export function playHover() {
   osc.type = "sine";
   osc.frequency.setValueAtTime(900, t);
   osc.frequency.exponentialRampToValueAtTime(1300, t + 0.05);
-  g.gain.setValueAtTime(0.3, t);
+  g.gain.setValueAtTime(0.6, t);
   g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
   osc.start(t); osc.stop(t + 0.12);
 }
@@ -45,7 +45,7 @@ export function playClick() {
   osc.type = "triangle";
   osc.frequency.setValueAtTime(650, t);
   osc.frequency.exponentialRampToValueAtTime(250, t + 0.08);
-  g.gain.setValueAtTime(0.4, t);
+  g.gain.setValueAtTime(0.8, t);
   g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
   osc.start(t); osc.stop(t + 0.17);
 }
