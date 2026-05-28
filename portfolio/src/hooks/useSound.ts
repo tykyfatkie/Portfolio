@@ -1,97 +1,51 @@
-/**
- * useSound — Web Audio API sound effects (no external files needed)
- * Plays a soft synthetic click/hover sound on interactive elements.
- */
+// ─── Singleton AudioContext — chỉ tạo sau user gesture ───────────────────────
+let AC: AudioContext | null = null;
 
-let ctx: AudioContext | null = null;
-
-function getCtx(): AudioContext {
-  if (!ctx) ctx = new AudioContext();
-  return ctx;
-}
-
-/** Soft UI click — short sine blip */
-export function playHover() {
-  try {
-    const ac = getCtx();
-    if (ac.state === "suspended") ac.resume();
-
-    const osc  = ac.createOscillator();
-    const gain = ac.createGain();
-
-    osc.connect(gain);
-    gain.connect(ac.destination);
-
-    // Neon-cyan blip: 880 Hz → 1200 Hz glide
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(880, ac.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1200, ac.currentTime + 0.05);
-
-    gain.gain.setValueAtTime(0, ac.currentTime);
-    gain.gain.linearRampToValueAtTime(0.06, ac.currentTime + 0.008);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.12);
-
-    osc.start(ac.currentTime);
-    osc.stop(ac.currentTime + 0.14);
-  } catch (_) {
-    // silence errors in environments without AudioContext
+/** Chỉ gọi trong event handler (click / mousedown / touchstart) */
+export function bootAudio() {
+  if (AC && AC.state !== "closed") {
+    if (AC.state === "suspended") AC.resume();
+    return;
   }
+  // Tạo mới — an toàn vì đang trong user gesture
+  AC = new AudioContext();
+  // Warm-up silent buffer để đảm bảo unlock hoàn toàn
+  const b = AC.createBuffer(1, 1, AC.sampleRate);
+  const s = AC.createBufferSource();
+  s.buffer = b; s.connect(AC.destination); s.start(0);
 }
 
-/** Slightly deeper click for button press */
+/** Trả về AC nếu đã sẵn sàng, null nếu chưa boot */
+function getAC(): AudioContext | null {
+  if (!AC || AC.state === "closed") return null;
+  if (AC.state === "suspended") AC.resume();
+  return AC;
+}
+
+export function playHover() {
+  const a = getAC(); if (!a) return;
+  const t = a.currentTime;
+  const osc = a.createOscillator();
+  const g   = a.createGain();
+  osc.connect(g); g.connect(a.destination);
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(900, t);
+  osc.frequency.exponentialRampToValueAtTime(1300, t + 0.05);
+  g.gain.setValueAtTime(0.3, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.1);
+  osc.start(t); osc.stop(t + 0.12);
+}
+
 export function playClick() {
-  try {
-    const ac = getCtx();
-    if (ac.state === "suspended") ac.resume();
-
-    const osc  = ac.createOscillator();
-    const gain = ac.createGain();
-
-    osc.connect(gain);
-    gain.connect(ac.destination);
-
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(600, ac.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(300, ac.currentTime + 0.08);
-
-    gain.gain.setValueAtTime(0, ac.currentTime);
-    gain.gain.linearRampToValueAtTime(0.09, ac.currentTime + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.18);
-
-    osc.start(ac.currentTime);
-    osc.stop(ac.currentTime + 0.2);
-  } catch (_) {}
-}
-
-/** Soft whoosh for section / card hover */
-export function playWhoosh() {
-  try {
-    const ac = getCtx();
-    if (ac.state === "suspended") ac.resume();
-
-    const bufSize = ac.sampleRate * 0.12;
-    const buf  = ac.createBuffer(1, bufSize, ac.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
-
-    const src    = ac.createBufferSource();
-    const filter = ac.createBiquadFilter();
-    const gain   = ac.createGain();
-
-    src.buffer = buf;
-    filter.type = "bandpass";
-    filter.frequency.setValueAtTime(3000, ac.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(800, ac.currentTime + 0.12);
-    filter.Q.value = 0.5;
-
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(ac.destination);
-
-    gain.gain.setValueAtTime(0, ac.currentTime);
-    gain.gain.linearRampToValueAtTime(0.04, ac.currentTime + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + 0.12);
-
-    src.start(ac.currentTime);
-  } catch (_) {}
+  const a = getAC(); if (!a) return;
+  const t = a.currentTime;
+  const osc = a.createOscillator();
+  const g   = a.createGain();
+  osc.connect(g); g.connect(a.destination);
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(650, t);
+  osc.frequency.exponentialRampToValueAtTime(250, t + 0.08);
+  g.gain.setValueAtTime(0.4, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+  osc.start(t); osc.stop(t + 0.17);
 }

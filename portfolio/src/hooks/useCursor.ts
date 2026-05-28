@@ -1,5 +1,20 @@
 import { useEffect } from "react";
-import { playHover, playClick } from "./useSound";
+import { bootAudio, playHover, playClick } from "./useSound";
+
+// Tất cả element có thể hover — mở rộng selector để bắt hết
+const HOVER_SEL = [
+  "a",
+  "button",
+  "[data-hover]",
+  ".proj-card",
+  ".proj-link",
+  ".proj-pill",
+  ".form-input",
+  ".section-label",
+  ".marquee-track span",
+  "input",
+  "textarea",
+].join(",");
 
 export function useCursor() {
   useEffect(() => {
@@ -8,50 +23,56 @@ export function useCursor() {
     if (!dot || !ring) return;
 
     let mx = 0, my = 0, rx = 0, ry = 0, raf = 0;
+    let currentHovered: Element | null = null;
 
+    // ── cursor follow ────────────────────────────────────────────────────────
     const onMove = (e: MouseEvent) => {
       mx = e.clientX; my = e.clientY;
-      dot.style.left = mx + "px";
-      dot.style.top  = my + "px";
+      dot.style.left = `${mx}px`; dot.style.top = `${my}px`;
     };
-
     const tick = () => {
-      rx += (mx - rx) * 0.1;
-      ry += (my - ry) * 0.1;
-      ring.style.left = rx + "px";
-      ring.style.top  = ry + "px";
+      rx += (mx - rx) * 0.1; ry += (my - ry) * 0.1;
+      ring.style.left = `${rx}px`; ring.style.top = `${ry}px`;
       raf = requestAnimationFrame(tick);
     };
-
-    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mousemove", onMove, { passive: true });
     tick();
 
-    const onEnter = () => {
+    // ── hover: chỉ fire khi vào element MỚI ─────────────────────────────────
+    const onOver = (e: MouseEvent) => {
+      const target = (e.target as Element).closest(HOVER_SEL);
+      if (!target || target === currentHovered) return;
+      currentHovered = target;
       ring.classList.add("hovering");
       dot.classList.add("hovering");
       playHover();
     };
-    const onLeave = () => {
+
+    const onOut = (e: MouseEvent) => {
+      const related = e.relatedTarget as Element | null;
+      if (related && currentHovered?.contains(related)) return;
+      if (related?.closest(HOVER_SEL)) return;
+      currentHovered = null;
       ring.classList.remove("hovering");
       dot.classList.remove("hovering");
     };
-    const onPointerDown = () => playClick();
 
-    const attach = () => {
-      document.querySelectorAll("a,button,[data-hover]").forEach(el => {
-        el.addEventListener("mouseenter", onEnter);
-        el.addEventListener("mouseleave", onLeave);
-        el.addEventListener("pointerdown", onPointerDown);
-      });
+    // ── mousedown: boot AudioContext (user gesture) + play click ─────────────
+    const onDown = (e: MouseEvent) => {
+      bootAudio();
+      if ((e.target as Element).closest(HOVER_SEL)) playClick();
     };
-    attach();
-    const mo = new MutationObserver(attach);
-    mo.observe(document.body, { childList: true, subtree: true });
+
+    document.addEventListener("mouseover",  onOver, { passive: true });
+    document.addEventListener("mouseout",   onOut,  { passive: true });
+    document.addEventListener("mousedown",  onDown);
 
     return () => {
       document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseover", onOver);
+      document.removeEventListener("mouseout",  onOut);
+      document.removeEventListener("mousedown", onDown);
       cancelAnimationFrame(raf);
-      mo.disconnect();
     };
   }, []);
 }
