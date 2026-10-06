@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { gsap } from "gsap";
-import ParticleCanvas from "../3d/ParticleCanvas";
+import { WarpFieldBackground } from "@designcodeio/threeui/components/WarpFieldBackground";
 
 const ROLES = ["Software Engineer", "Front-end Developer", "Full-stack Builder", "AI Integrator"];
 
@@ -57,10 +57,19 @@ const HeroSection = () => {
         background: "var(--bg)",
       }}
     >
-      <ParticleCanvas />
+      {/* Warp field background (ThreeUI) */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+        <WarpFieldBackground variant="streaks" speed={8} streakOpacity={0.55} brightness={0.9} />
+      </div>
+
+      {/* Vignette giữ chữ dễ đọc */}
+      <div style={{
+        position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+        background: "radial-gradient(ellipse at center, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0.2) 45%, var(--bg) 100%)",
+      }} />
 
       {/* Gradient blobs */}
-      <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none", overflow: "hidden" }}>
         <div style={{
           position: "absolute", width: 600, height: 600,
           borderRadius: "50%",
