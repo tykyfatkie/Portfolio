@@ -36,7 +36,7 @@ const TechGlobe = ({ active }: Props) => {
 
     const scene  = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 50);
-    camera.position.z = 6.4;
+    camera.position.z = 8.6;
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mount.appendChild(renderer.domElement);
@@ -154,7 +154,7 @@ const TechGlobe = ({ active }: Props) => {
         const depthOpacity = act && sp.group === act ? 0.55 + d * 0.45 : 0.15 + d * 0.85;
         sp.mat.opacity = depthOpacity * sp.glow;
         const k = (0.7 + d * 0.5) * sp.boost;
-        sp.s.scale.set(1.5 * k, 0.375 * k, 1);
+        sp.s.scale.set(1.75 * k, 0.4375 * k, 1);
       });
 
       renderer.render(scene, camera);
