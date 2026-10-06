@@ -3,11 +3,11 @@ import { useBackgroundMusic } from "../../hooks/useBackgroundMusic";
 import { bootAudio } from "../../hooks/useSound";
 import { ensureAnalyser, level } from "../../lib/music";
 
-const BARS = 9;
+const BARS = 24;
 const REST = 0.14;
 
 /**
- * Sóng âm nhỏ trên thanh menu: nhảy theo phổ tần số thật của bản nhạc, bấm để bật/tắt nhạc.
+ * Sóng âm trên thanh menu: nhảy theo phổ tần số thật của bản nhạc, bấm để bật/tắt nhạc.
  * Đồng thời ghi mức bass vào `level` và biến CSS --beat cho các hiệu ứng khác (hero) phản ứng theo nhịp.
  */
 const AudioWave = () => {
@@ -37,7 +37,7 @@ const AudioWave = () => {
       for (let i = 0; i < BARS; i++) {
         let target: number;
         if (an) {
-          const bin = Math.min(31, Math.floor(Math.pow(i / (BARS - 1), 1.6) * 18) + 1);
+          const bin = Math.min(31, Math.floor(Math.pow(i / (BARS - 1), 1.5) * 22) + 1);
           target = REST + (data[bin] / 255) * (1 - REST);
         } else {
           target = 0.25 + 0.5 * Math.abs(Math.sin(t * 3 + i * 0.8)); // chưa nối được analyser → sóng giả
@@ -69,9 +69,11 @@ const AudioWave = () => {
       title={playing ? "Tắt nhạc nền" : "Bật nhạc nền"}
     >
       <span className="audio-wave__bars" aria-hidden>
-        {Array.from({ length: BARS }, (_, i) => <span key={i} ref={el => { bars.current[i] = el; }} />)}
+        {Array.from({ length: BARS }, (_, i) => (
+          <span key={i} ref={el => { bars.current[i] = el; }} style={{ ["--c" as string]: `hsl(${120 + (i / (BARS - 1)) * 210} 100% 58%)` }} />
+        ))}
       </span>
-      <span className="audio-wave__label">{playing ? "ON" : "OFF"}</span>
+      <span className="audio-wave__label"><b>SOUND</b><i>{playing ? "ON" : "OFF"}</i></span>
     </button>
   );
 };
