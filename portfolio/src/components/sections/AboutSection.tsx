@@ -14,6 +14,13 @@ const STATS = [
 
 const TIMELINE = [
   {
+    period: "Present",
+    title: "Backend Developer",
+    org: "DIGIPAY JSC",
+    desc: "Building and maintaining backend services and APIs with NestJS, PHP and MariaDB.",
+    color: "var(--neon3)",
+  },
+  {
     period: "Fall 2022 – Now",
     title: "Bachelor of Software Engineering",
     org: "FPT University",
@@ -79,11 +86,11 @@ const AboutSection = () => {
           <motion.div data-fx="left"
           >
             <p style={{ color: "#888", lineHeight: 1.95, fontSize: ".95rem", fontWeight: 300, marginBottom: "1.5rem" }}>
-              I'm <strong style={{ color: "var(--text)", fontWeight: 500 }}>Nguyễn Tăng Tài Phát</strong> — an adaptable software engineering student based in 
+              I'm <strong style={{ color: "var(--text)", fontWeight: 500 }}>Nguyễn Tăng Tài Phát</strong> — a backend developer at <strong style={{ color: "var(--text)" }}>DIGIPAY JSC</strong> and software engineering student based in 
               <strong style={{ color: "var(--neon)" }}> Ho Chi Minh City</strong>, Vietnam.
             </p>
             <p style={{ color: "#888", lineHeight: 1.95, fontSize: ".95rem", fontWeight: 300, marginBottom: "1.5rem" }}>
-              I have a versatile background in both <strong style={{ color: "var(--text)" }}>Front-end (ReactJS)</strong> and <strong style={{ color: "var(--text)" }}>Back-end (ASP.NET Core, Django)</strong> development, 
+              I have a versatile background in both <strong style={{ color: "var(--text)" }}>Front-end (ReactJS)</strong> and <strong style={{ color: "var(--text)" }}>Back-end (NestJS, PHP, ASP.NET Core, Django)</strong> development, plus <strong style={{ color: "var(--text)" }}>Mobile (Flutter, React Native)</strong>, 
               with hands-on experience integrating AI models into web applications.
             </p>
             <p style={{ color: "#888", lineHeight: 1.95, fontSize: ".95rem", fontWeight: 300 }}>

@@ -407,22 +407,6 @@ html, body { height: 100%; overflow: hidden; }
 }
 .deck-jump .threeui-background { background: #000; }
 
-/* Hero HUD + giáp 3D */
+/* Hero: khối chữ nghiêng 3D theo chuột */
 .hero-stage { transform-style: preserve-3d; will-change: transform; }
-.hud {
-  position: absolute;
-  z-index: 11;
-  font-family: var(--font-mono);
-  font-size: .6rem;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: var(--muted);
-  pointer-events: none;
-}
-.hud b { color: var(--neon); font-weight: 400; }
-.hud--tl { top: 6rem; left: 2.5rem; }
-.hud--tr { top: 6rem; right: 4.5rem; text-align: right; }
-.hud--bl { bottom: 6.5rem; left: 2.5rem; }
-.hud--v  { left: 1.2rem; top: 50%; writing-mode: vertical-rl; transform: rotate(180deg) translateY(50%); }
-.hud__tick { display: inline-block; width: 26px; height: 1px; background: var(--neon); vertical-align: middle; margin-right: .6rem; }
-@media (max-width: 900px) { .hud { display: none; } }
+

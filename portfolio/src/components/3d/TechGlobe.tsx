@@ -5,6 +5,7 @@ const TECH = [
   "ReactJS", "TypeScript", "React Native", "Angular", "TailwindCSS", "ASP.NET Core", "Django", "Python",
   "C#", "Node.js", "MySQL", "PostgreSQL", "Firebase", "Supabase", "Docker", "Redis", "Git", "Vite",
   "Zustand", "YOLOv8", "Android", "Figma", "REST API", "SQLite", "GSAP", "Three.js",
+  "NestJS", "PHP", "MariaDB", "Flutter",
 ];
 const COLORS = ["#39ff14", "#ff2d78", "#00cfff", "#ffd700"];
 

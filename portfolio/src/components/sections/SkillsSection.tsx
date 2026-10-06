@@ -11,6 +11,7 @@ const SKILL_GROUPS = [
     color: "var(--neon)",
     skills: [
       { name: "ReactJS / TypeScript", level: 85 },
+      { name: "Flutter (Dart)",        level: 70 },
       { name: "React Native",         level: 75 },
       { name: "Angular",              level: 60 },
       { name: "TailwindCSS",          level: 90 },
@@ -21,9 +22,11 @@ const SKILL_GROUPS = [
     category: "Back-end",
     color: "var(--neon2)",
     skills: [
+      { name: "NestJS (Node.js)",  level: 78 },
+      { name: "PHP",               level: 72 },
       { name: "ASP.NET Core (C#)", level: 70 },
       { name: "Django (Python)",   level: 65 },
-      { name: "Node.js",           level: 60 },
+      { name: "Node.js",           level: 70 },
       { name: "REST APIs",         level: 80 },
     ],
   },
@@ -31,7 +34,8 @@ const SKILL_GROUPS = [
     category: "Databases",
     color: "var(--neon3)",
     skills: [
-      { name: "MySQL / PostgreSQL", level: 75 },
+      { name: "MariaDB / MySQL",    level: 78 },
+      { name: "PostgreSQL",         level: 72 },
       { name: "SQLite",             level: 70 },
       { name: "Firebase / Supabase",level: 72 },
     ],
@@ -94,7 +98,7 @@ const SkillBar = ({ name, level, color }: { name: string; level: number; color: 
 
 const MARQUEE_SKILLS = [
   "ReactJS","TypeScript","React Native","Angular","TailwindCSS","ASP.NET Core",
-  "Django","Python","C#","Node.js","MySQL","PostgreSQL","Firebase","Supabase",
+  "Django","Python","C#","Node.js","NestJS","PHP","Flutter","MariaDB","MySQL","PostgreSQL","Firebase","Supabase",
   "Docker","Redis","Git","Vite","Zustand","YOLOv8","Android Studio","Figma",
 ];
 

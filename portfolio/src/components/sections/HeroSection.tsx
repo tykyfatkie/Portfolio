@@ -5,7 +5,7 @@ import SplitChars from "../ui/SplitChars";
 import Magnetic from "../ui/Magnetic";
 import Backdrop, { Warp } from "../3d/Backdrops";
 
-const ROLES = ["Software Engineer", "Front-end Developer", "Full-stack Builder", "AI Integrator"];
+const ROLES = ["Backend Developer", "NestJS · PHP · MariaDB", "Flutter & Mobile Builder", "Full-stack Engineer"];
 
 const HeroSection = () => {
   const roleRef  = useRef<HTMLSpanElement>(null);
@@ -99,11 +99,6 @@ const HeroSection = () => {
         background: "radial-gradient(ellipse at center, rgba(5,5,5,0.45) 0%, rgba(5,5,5,0.15) 45%, var(--bg) 100%)",
       }} />
 
-      {/* HUD */}
-      <div className="hud hud--tl" data-fx="fade"><span className="hud__tick" />PORTFOLIO <b>/ 2025</b><br />BUILD <b>v1.0.0</b></div>
-      <div className="hud hud--tr" data-fx="fade">HO CHI MINH CITY<br /><b>10.82°N · 106.63°E</b></div>
-      <div className="hud hud--bl" data-fx="fade">FPT UNIVERSITY<br />SOFTWARE ENGINEERING</div>
-      <div className="hud hud--v" data-fx="fade">REACT · THREE.JS · GSAP · AI</div>
 
       {/* Gradient blobs */}
       <div style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none", overflow: "hidden" }}>
@@ -142,7 +137,7 @@ const HeroSection = () => {
           }}
         >
           <span style={{ display: "inline-block", width: 32, height: 1, background: "var(--neon)" }} />
-          Available for opportunities · 2025
+          Backend Developer @ DIGIPAY JSC
           <span style={{ display: "inline-block", width: 32, height: 1, background: "var(--neon)" }} />
         </motion.div>
 
@@ -209,7 +204,7 @@ const HeroSection = () => {
             fontWeight: 300,
           }}
         >
-          FPT University student passionate about crafting immersive web experiences,
+          Backend developer at DIGIPAY JSC and FPT University student, building reliable APIs, mobile apps and immersive web experiences,
           integrating AI, and building products that actually matter.
         </motion.p>
 

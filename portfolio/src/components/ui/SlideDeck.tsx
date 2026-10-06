@@ -1,20 +1,19 @@
-import {
+﻿import {
   Children, Suspense, createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState,
   type ReactNode, type RefObject,
 } from "react";
 import { gsap } from "gsap";
-(window as unknown as { __gsap: typeof gsap }).__gsap = gsap; // TEMP-DEBUG
 import { Warp } from "../3d/Backdrops";
 
 /**
- * Chế độ "slide": mỗi section là một slide toàn màn hình.
- * - Chuyển slide bằng lăn chuột, phím mũi tên / PageUp / PageDown / Space / Home / End, vuốt cảm ứng, dot bên phải hoặc link #anchor.
- * - Slide dài hơn màn hình vẫn cuộn bên trong; chỉ chuyển slide khi đã chạm mép trên/dưới.
+ * Cháº¿ Ä‘á»™ "slide": má»—i section lÃ  má»™t slide toÃ n mÃ n hÃ¬nh.
+ * - Chuyá»ƒn slide báº±ng lÄƒn chuá»™t, phÃ­m mÅ©i tÃªn / PageUp / PageDown / Space / Home / End, vuá»‘t cáº£m á»©ng, dot bÃªn pháº£i hoáº·c link #anchor.
+ * - Slide dÃ i hÆ¡n mÃ n hÃ¬nh váº«n cuá»™n bÃªn trong; chá»‰ chuyá»ƒn slide khi Ä‘Ã£ cháº¡m mÃ©p trÃªn/dÆ°á»›i.
  */
 
 /**
- * Khối nào gắn data-fx="up|left|right|zoom|fade" sẽ được dàn dựng riêng khi chuyển slide
- * (bay vào lần lượt theo thứ tự DOM, bay ra khi rời đi). Phát lại mỗi lần ghé thăm slide.
+ * Khá»‘i nÃ o gáº¯n data-fx="up|left|right|zoom|fade" sáº½ Ä‘Æ°á»£c dÃ n dá»±ng riÃªng khi chuyá»ƒn slide
+ * (bay vÃ o láº§n lÆ°á»£t theo thá»© tá»± DOM, bay ra khi rá»i Ä‘i). PhÃ¡t láº¡i má»—i láº§n ghÃ© thÄƒm slide.
  */
 const FX_FROM: Record<string, gsap.TweenVars> = {
   up: { y: 70 }, left: { x: -90 }, right: { x: 90 }, zoom: { scale: 0.78 }, fade: {},
@@ -49,7 +48,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
 
   const ctx = useRef<gsap.Context | null>(null);
 
-  // Đặt vị trí ban đầu trước khi paint; gsap.context để dọn toàn bộ tween khi unmount
+  // Äáº·t vá»‹ trÃ­ ban Ä‘áº§u trÆ°á»›c khi paint; gsap.context Ä‘á»ƒ dá»n toÃ n bá»™ tween khi unmount
   useLayoutEffect(() => {
     ctx.current = gsap.context(() => {}, deckRef);
     if (jumpRef.current) gsap.set(jumpRef.current, { yPercent: 100, opacity: 0 });
@@ -78,7 +77,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     const wipe = wipeRef.current, jump = jumpRef.current;
     const inKids = Array.from(inn.children);
 
-    // Slide mới nằm trên, bị che hoàn toàn bằng clip-path rồi được "vén" ra theo dải sáng
+    // Slide má»›i náº±m trÃªn, bá»‹ che hoÃ n toÃ n báº±ng clip-path rá»“i Ä‘Æ°á»£c "vÃ©n" ra theo dáº£i sÃ¡ng
     gsap.killTweensOf([...outItems, ...inItems]);
     gsap.set(inn, {
       autoAlpha: 1, opacity: 1, yPercent: 0, scale: 1, zIndex: 2,
@@ -88,30 +87,30 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     inItems.forEach(el => gsap.set(el, fxFrom(el)));
     gsap.set(inKids, { y: dir * 140, scale: 0.9, transformOrigin: "50% 25%" });
 
-    const D = 1.3;       // thời gian vén slide
-    const T = 0.22;      // độ trễ so với lúc slide cũ bắt đầu tản
+    const D = 1.3;       // thá»i gian vÃ©n slide
+    const T = 0.22;      // Ä‘á»™ trá»… so vá»›i lÃºc slide cÅ© báº¯t Ä‘áº§u táº£n
     ctx.current.add(() => {
       const tl = gsap.timeline({
         onComplete: () => {
-          // slide cũ về vị trí chờ phía dưới màn hình để các canvas 3D của nó tự dừng render
+          // slide cÅ© vá» vá»‹ trÃ­ chá» phÃ­a dÆ°á»›i mÃ n hÃ¬nh Ä‘á»ƒ cÃ¡c canvas 3D cá»§a nÃ³ tá»± dá»«ng render
           gsap.set(out, { autoAlpha: 0, scale: 1, yPercent: 100, opacity: 1 });
           gsap.set(outItems, { opacity: 1, clearProps: "filter,transform" });
         },
       });
 
-      // 1) Nội dung slide cũ tản ra từng khối: trôi ngược hướng, mờ nhoè dần
+      // 1) Ná»™i dung slide cÅ© táº£n ra tá»«ng khá»‘i: trÃ´i ngÆ°á»£c hÆ°á»›ng, má» nhoÃ¨ dáº§n
       tl.to(outItems, {
         opacity: 0, y: -dir * 70, scale: 0.92, filter: "blur(10px)",
         duration: 0.55, ease: "power2.in", stagger: 0.04,
       }, 0);
-      // 2) Cả slide cũ bị "hút" lướt qua camera: phóng to, mờ dần
+      // 2) Cáº£ slide cÅ© bá»‹ "hÃºt" lÆ°á»›t qua camera: phÃ³ng to, má» dáº§n
       tl.to(out, { scale: 1.18, opacity: 0, duration: D * 0.9, ease: "power3.in" }, 0.05);
 
-      // 3) Slide mới được vén ra, nội dung từ xa lao vào đúng chỗ (parallax so với mép vén)
+      // 3) Slide má»›i Ä‘Æ°á»£c vÃ©n ra, ná»™i dung tá»« xa lao vÃ o Ä‘Ãºng chá»— (parallax so vá»›i mÃ©p vÃ©n)
       tl.to(inn, { clipPath: "inset(0% 0% 0% 0%)", duration: D, ease: "power3.inOut", clearProps: "clipPath" }, T);
       tl.to(inKids, { y: 0, scale: 1, duration: D + 0.3, ease: "power3.out", clearProps: "transform,transformOrigin" }, T);
 
-      // 4) Hiệu ứng "nhảy warp": canvas hyperspace của ThreeUI phủ lên rồi tan đi
+      // 4) Hiá»‡u á»©ng "nháº£y warp": canvas hyperspace cá»§a ThreeUI phá»§ lÃªn rá»“i tan Ä‘i
       if (jump) {
         tl.set(jump, { yPercent: 0, opacity: 0 }, 0)
           .to(jump, { opacity: 0.95, duration: 0.4, ease: "power2.out" }, 0)
@@ -119,7 +118,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
           .set(jump, { yPercent: 100 }, T + D * 0.5 + 0.8);
       }
 
-      // 5) Dải sáng bám đúng mép vén
+      // 5) Dáº£i sÃ¡ng bÃ¡m Ä‘Ãºng mÃ©p vÃ©n
       if (wipe) {
         tl.fromTo(wipe,
           { yPercent: dir > 0 ? 100 : -100, scaleY: dir > 0 ? 1 : -1, autoAlpha: 1 },
@@ -127,14 +126,14 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
         tl.to(wipe, { autoAlpha: 0, duration: 0.3, ease: "power1.out" }, T + D - 0.05);
       }
 
-      // 6) Khối nội dung slide mới bay vào lần lượt khi mép vén đi được nửa đường
+      // 6) Khá»‘i ná»™i dung slide má»›i bay vÃ o láº§n lÆ°á»£t khi mÃ©p vÃ©n Ä‘i Ä‘Æ°á»£c ná»­a Ä‘Æ°á»ng
       tl.to(inItems, {
         opacity: 1, x: 0, y: 0, scale: 1, filter: "blur(0px)",
         duration: 1, ease: "power3.out", stagger: 0.09,
         onComplete: () => { gsap.set(inItems, { clearProps: "filter" }); },
       }, T + D * 0.4);
 
-      // Cho phép chuyển slide tiếp ngay khi slide mới đã lộ hết
+      // Cho phÃ©p chuyá»ƒn slide tiáº¿p ngay khi slide má»›i Ä‘Ã£ lá»™ háº¿t
       tl.call(() => { busy.current = false; }, undefined, T + D);
     });
   }, [n, ids]);
@@ -151,10 +150,10 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || Math.abs(e.deltaY) < 4) return;
       const dir = e.deltaY > 0 ? 1 : -1;
       const now = performance.now();
-      const fresh = now - lastWheel.current > 200; // phân biệt cử chỉ mới và quán tính
+      const fresh = now - lastWheel.current > 200; // phÃ¢n biá»‡t cá»­ chá»‰ má»›i vÃ  quÃ¡n tÃ­nh
       lastWheel.current = now;
       if (busy.current) { e.preventDefault(); return; }
-      if (canScroll(dir)) return; // để slide tự cuộn bên trong
+      if (canScroll(dir)) return; // Ä‘á»ƒ slide tá»± cuá»™n bÃªn trong
       e.preventDefault();
       if (fresh) goTo(cur.current + dir, true);
     };
@@ -187,7 +186,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
       else if (dy < 0 && atTop) goTo(cur.current - 1, true);
     };
 
-    // Link #anchor → chuyển slide
+    // Link #anchor â†’ chuyá»ƒn slide
     const onClick = (e: MouseEvent) => {
       const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
       if (!a) return;
@@ -215,7 +214,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     <DeckContext.Provider value={{ index, ids, goTo, deckRef }}>
       {children}
 
-      {/* Overlay hyperspace (ThreeUI WarpField) — nằm ngoài màn hình khi nghỉ để tự dừng render */}
+      {/* Overlay hyperspace (ThreeUI WarpField) â€” náº±m ngoÃ i mÃ n hÃ¬nh khi nghá»‰ Ä‘á»ƒ tá»± dá»«ng render */}
       <div ref={jumpRef} className="deck-jump" aria-hidden>
         <Suspense fallback={null}>
           <Warp variant="hyperspace" speed={14} streakOpacity={0.9} tileOpacity={0} brightness={1.1} />
