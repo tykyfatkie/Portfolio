@@ -7,7 +7,7 @@
 .skills-meta b { display: block; font-family: var(--font-display); font-size: 2.2rem; line-height: 1; letter-spacing: .02em; color: var(--neon); text-shadow: 0 0 18px rgba(57, 255, 20, .45); }
 
 .skills-main { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 2rem; align-items: center; margin-bottom: 4rem; }
-.skills-globe { position: relative; }
+.skills-globe { position: relative; align-self: start; }
 .skills-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin-top: -.5rem; }
 .legend-chip {
   --c: var(--neon);
@@ -24,8 +24,8 @@
 .skills-hint { margin-top: 1rem; text-align: center; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; }
 
 .skills-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: stretch; }
-.skills-panels > div { height: 100%; }
-.skills-panels .skill-panel { height: 100%; }
+.skills-panels > div { display: flex; }
+.skills-panels .skill-panel { flex: 1; min-width: 0; }
 .skill-panel {
   --c: var(--neon);
   padding: 1.3rem 1.4rem 1.4rem;
@@ -46,9 +46,9 @@
 /* Vòng đo */
 .sring { --c: var(--neon); position: relative; flex: none; width: 46px; height: 46px; display: grid; place-items: center; }
 .sring svg { position: absolute; inset: 0; transform: rotate(-90deg); overflow: visible; }
-.ring__bg { fill: none; stroke: rgba(255, 255, 255, .08); stroke-width: 3.5; }
-.ring__arc { fill: none; stroke: var(--c); stroke-width: 3.5; stroke-linecap: round; filter: drop-shadow(0 0 4px var(--c)); }
-.ring__num { position: relative; font-family: var(--font-mono); font-size: .64rem; font-weight: 700; color: #fff; }
+.sring__bg { fill: none; stroke: rgba(255, 255, 255, .08); stroke-width: 3.5; }
+.sring__arc { fill: none; stroke: var(--c); stroke-width: 3.5; stroke-linecap: round; filter: drop-shadow(0 0 4px var(--c)); }
+.sring__num { position: relative; font-family: var(--font-mono); font-size: .64rem; font-weight: 700; color: #fff; }
 
 /* Chứng chỉ */
 .skills-certs { margin-bottom: 3.5rem; }
