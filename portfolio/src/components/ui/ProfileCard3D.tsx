@@ -59,7 +59,7 @@ const ProfileCard3D = () => {
           <div className="pc__initials" aria-hidden>PHAT</div>
 
           <div className="pc__info">
-            <div className="pc__name">Nguyễn Tăng Tài Phát</div>
+            <div className="pc__name">TYPHAT NGUYEN</div>
             <div className="pc__role">Backend Developer</div>
             <div className="pc__org">@ DIGIPAY JSC · Ho Chi Minh City</div>
           </div>

@@ -28,7 +28,6 @@ const FONTS = [
   "500 1em 'DM Sans'",
   "400 1em 'JetBrains Mono'",
   "700 1em 'JetBrains Mono'",
-  "700 1em 'Barlow Condensed'",
 ];
 
 type Task = { label: string; weight: number; run: (report: (frac: number) => void) => Promise<void> };
@@ -83,7 +82,7 @@ const tasks: Task[] = [
     weight: 8,
     run: async report => {
       let done = 0;
-      const all = FONTS.map(f => document.fonts.load(f, "Nguyễn Tăng Tài Phát").catch(() => null).then(() => report(++done / FONTS.length)));
+      const all = FONTS.map(f => document.fonts.load(f).catch(() => null).then(() => report(++done / FONTS.length)));
       await withTimeout(Promise.all(all), 6000);
       await withTimeout(document.fonts.ready, 1000);
       report(1);

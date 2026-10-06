@@ -100,7 +100,7 @@
   user-select: none;
 }
 .pc__info { position: absolute; left: 1.4rem; right: 1.4rem; bottom: 1.5rem; transform: translateZ(75px); }
-.pc__name { font-family: var(--font-display-vi); font-weight: 700; text-transform: uppercase; font-size: 1.85rem; letter-spacing: .03em; line-height: 1; color: var(--text); }
+.pc__name { font-family: var(--font-display); font-size: 1.7rem; letter-spacing: .04em; line-height: 1; color: var(--text); }
 .pc__role { margin-top: .5rem; font-family: var(--font-mono); font-size: .78rem; color: var(--neon3); letter-spacing: .06em; }
 .pc__org  { margin-top: .3rem; font-family: var(--font-mono); font-size: .62rem; color: var(--muted); letter-spacing: .08em; }
 .pc__chip { position: absolute; transform-style: preserve-3d; pointer-events: none; }
