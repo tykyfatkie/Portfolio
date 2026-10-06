@@ -16,6 +16,7 @@ const Preloader = ({ onReady, onDone }: Props) => {
   const [pct, setPct]       = useState(0);
   const [label, setLabel]   = useState("Starting");
   const [detail, setDetail] = useState<TaskDetail[]>([]);
+  const [stage, setStage]   = useState<"loading" | "finalizing" | "ready">("loading");
   const topRef  = useRef<HTMLDivElement>(null);
   const botRef  = useRef<HTMLDivElement>(null);
   const uiRef   = useRef<HTMLDivElement>(null);
@@ -37,27 +38,49 @@ const Preloader = ({ onReady, onDone }: Props) => {
     };
     tick();
 
-    preloadAll((p, l, d) => { target.current = p; setLabel(l); setDetail(d); }).then(async () => {
+    // Chờ cho tới khi trang chính dựng xong và main thread chạy mượt trở lại (nhiều frame liên tiếp nhanh)
+    const waitSmooth = (minHold: number, timeout: number) => new Promise<void>(resolve => {
+      const t0 = performance.now();
+      let prev = t0, good = 0;
+      const step = (now: number) => {
+        const dt = now - prev; prev = now;
+        good = dt < 34 ? good + 1 : 0;
+        const held = now - t0;
+        if (cancelled || (held >= minHold && good >= 10) || held >= timeout) resolve();
+        else requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+
+    preloadAll((p, l, d) => { target.current = Math.min(p, 0.99); setLabel(l); setDetail(d); }).then(async () => {
       if (cancelled) return;
       const wait = Math.max(0, MIN_SHOW - (performance.now() - start));
       await new Promise(r => setTimeout(r, wait));
+      if (cancelled) return;
+
+      // 1) Giữ ở 99%: dựng trang chính ngầm phía sau. Phần giật do dựng 3D rơi vào đoạn này,
+      //    không rơi vào outro.
+      setStage("finalizing");
+      onReady();
+      await waitSmooth(900, 6000);
+      if (cancelled) return;
+
+      // 2) Trang đã sẵn sàng và chạy mượt → mới nhảy lên 100%, các hạt hội tụ nốt
       target.current = 1;
       finished = true;
-      // chờ số chạy tới 100 (các hạt cũng hội tụ hoàn toàn lúc này)
+      setStage("ready");
       await new Promise<void>(r => { const t = setInterval(() => { if (cancelled || shown.current >= 0.999) { clearInterval(t); r(); } }, 30); });
       if (cancelled) return;
-
-      await new Promise(r => setTimeout(r, 650));   // giữ chữ hoàn chỉnh một nhịp
+      await new Promise(r => setTimeout(r, 450));   // giữ chữ hoàn chỉnh một nhịp
       if (cancelled) return;
-      onReady();                                    // mount trang chính ngay phía sau
-      particles.current?.burst();                   // hạt nổ tung
-      await new Promise(r => setTimeout(r, 500));   // cho trang chính mount + 3D khởi tạo xong
 
+      // 3) Outro: hạt nổ tung rồi màn hình tách đôi (lúc này không còn việc nặng nào tranh main thread)
+      particles.current?.burst();
       gsap.timeline({ onComplete: onDone })
-        .to(uiRef.current, { opacity: 0, y: 30, duration: 0.45, ease: "power3.in" }, 0)
-        .to(cornerRef.current, { opacity: 0, scale: 1.12, duration: 0.6, ease: "power3.in" }, 0)
-        .to(topRef.current, { yPercent: -100, duration: 1.05, ease: "expo.inOut" }, 0.2)
-        .to(botRef.current, { yPercent: 100, duration: 1.05, ease: "expo.inOut" }, 0.2);
+        .to(uiRef.current, { opacity: 0, y: 30, duration: 0.5, ease: "power3.in" }, 0)
+        .to(cornerRef.current, { opacity: 0, scale: 1.12, duration: 0.7, ease: "power3.in" }, 0)
+        .to(topRef.current, { yPercent: -100, duration: 1.1, ease: "expo.inOut" }, 0.35)
+        .to(botRef.current, { yPercent: 100, duration: 1.1, ease: "expo.inOut" }, 0.35);
     });
 
     return () => { cancelled = true; cancelAnimationFrame(raf); };
@@ -93,7 +116,7 @@ const Preloader = ({ onReady, onDone }: Props) => {
         </ul>
 
         <div className="preloader__label">
-          {pct < 100 ? <>Loading <b>{label}</b></> : "System ready"}
+          {stage === "loading" ? <>Loading <b>{label}</b></> : stage === "finalizing" ? <>Finalizing <b>scene</b></> : "System ready"}
         </div>
       </div>
     </div>
