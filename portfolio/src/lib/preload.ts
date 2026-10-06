@@ -14,6 +14,7 @@ export const assets = {
 
 const IMAGES = [
   "/images/about/typhat.jpg",
+  "/images/about/typhat-cutout.png",
   "/images/projects/mommilk.png",
   "/images/projects/mome.png",
   "/images/projects/orchid.png",

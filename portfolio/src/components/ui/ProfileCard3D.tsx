@@ -64,6 +64,11 @@ const ProfileCard3D = () => {
             <i className="pc__photo-c pc__photo-c--tl" /><i className="pc__photo-c pc__photo-c--br" />
           </div>
 
+          {/* Bản tách nền cùng toạ độ với ảnh nền nhưng nổi ở lớp Z gần hơn: người "phá khung" nhô lên trên khung ảnh */}
+          <div className="pc__cutout" aria-hidden>
+            <img src="/images/about/typhat-cutout.png" alt="" draggable={false} />
+          </div>
+
           <div className="pc__initials" aria-hidden>PHAT</div>
 
           <div className="pc__info">

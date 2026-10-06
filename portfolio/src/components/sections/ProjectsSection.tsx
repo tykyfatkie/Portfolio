@@ -1,286 +1,212 @@
-/**
- * ProjectsSection.tsx
- *
- * ─── THÊM PROJECT MỚI ────────────────────────────────────────
- * Chỉ cần thêm object vào mảng PROJECTS bên dưới:
- *
- *   {
- *     id: 7,                               // tăng dần
- *     number: "07",                        // hiển thị watermark
- *     tag: "Category · Role",
- *     title: "Tên Project",
- *     description: "Mô tả ngắn...",
- *     tech: ["React", "Node.js", ...],     // tech pills
- *     color: "#hexcode",                   // màu chủ đạo — tự động áp vào toàn card
- *     teamSize: 3,
- *     image: "/images/projects/demo.png",  // đặt file vào public/images/projects/
- *                                          // bỏ trống ("") nếu chưa có ảnh → hiện placeholder đẹp
- *     githubUrl: "https://github.com/...", // bỏ nếu không có
- *     liveUrl:   "https://...",            // bỏ nếu không có
- *   },
- *
- * ─────────────────────────────────────────────────────────────
- */
-
-import { useRef, useState, useCallback } from "react";
-import { motion } from "motion/react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import ScrambleText from "../ui/ScrambleText";
 import Backdrop from "../3d/Backdrops";
-import "../styles/projects.css";
+import ProjectDetail from "../ui/ProjectDetail";
+import { useDeck } from "../ui/SlideDeck";
+import { PROJECTS, type Project } from "../../data/projects";
+import { playTick } from "../../hooks/useSound";
 
-// ─── DATA ────────────────────────────────────────────────────
-interface Project {
-  id: number;
-  number: string;
-  tag: string;
-  title: string;
-  description: string;
-  tech: string[];
-  color: string;
-  hue: number;
-  teamSize: number;
-  image?: string;      // path tương đối từ /public — vd: "/images/projects/mommilk.png"
-  githubUrl?: string;
-  liveUrl?: string;
-}
+const GAP = 300;     // khoảng cách ngang giữa các thẻ (px)
+const DEPTH = 190;   // độ lùi sâu mỗi bậc (px)
+const TURN = 38;     // góc xoay mỗi bậc (độ)
 
-const PROJECTS: Project[] = [
-  {
-    id: 1,
-    number: "01",
-    tag: "E-Commerce · Front-end Dev",
-    title: "MomMilk Platform",
-    description:
-      "E-commerce platform for baby and mom milk products. Allows users to browse and purchase infant formula, toddler milk, and nutrition supplements for mothers.",
-    tech: ["ASP.NET Core", "Node.js", "Firebase", "MySQL", "Sandbox"],
-    hue: 160,
-    teamSize: 4,
-    image: "/images/projects/mommilk.png",
-    githubUrl: "https://github.com/devbaoo/Mommilk",
-    color: "#39ff14",
-  },
-  {
-    id: 2,
-    number: "02",
-    tag: "Mobile · Full-stack Dev",
-    title: "MÔME Food Order",
-    description:
-      "Food ordering app for Vinhomes District 9 residents with baby health tracking: weight, height, feeding schedules, vaccination records and growth progress.",
-    tech: ["Android Studio", "SQLite", "TogetherAI API", "PayOS"],
-    hue: 330,
-    teamSize: 2,
-    image: "/images/projects/mome.png",
-    liveUrl: "https://apkpure.com/mômê/com.dk.foodorder",
-    color: "#ff2d78",
-  },
-  {
-    id: 3,
-    number: "03",
-    tag: "SaaS · Front-end + Mobile",
-    title: "Orchid Research & Lab",
-    description:
-      "Digital platform modernising botanical research via cloud-based management and AI-driven predictive analytics. Uses YOLOv8 to monitor and forecast orchid growth patterns.",
-    tech: ["ReactJS", "React Native", "Tailwind CSS", "ASP.NET Core", "YOLOv8", "PostgreSQL"],
-    hue: 200,
-    teamSize: 4,
-    image: "/images/projects/orchid.png",
-    githubUrl: "https://github.com/orchid-lab",
-    color: "#00cfff",
-  },
-  {
-    id: 4,
-    number: "04",
-    tag: "AI · Full-stack Dev",
-    title: "AI Chatbox",
-    description:
-      "Intelligent chatbot web app powered by Google Gemini API. Supports multi-turn conversations with persistent chat history stored in SQLite, backed by a Django REST API and a TypeScript front-end.",
-    tech: ["Django", "TypeScript", "Gemini API", "SQLite"],
-    hue: 45,
-    teamSize: 1,
-    image: "/images/projects/ai-chatbox.png",
-    githubUrl: "https://github.com/tykyfatkie/ai-chatbox-django",
-    color: "#ffd700",
-  },
-  {
-    id: 5,
-    number: "05",
-    tag: "HealthTech · Full-stack Dev",
-    title: "Children Vaccination System",
-    description:
-      "End-to-end vaccination management platform for children. Handles scheduling, reminders, and payment integration via VNPay Sandbox, built on a C# .NET back-end with a TypeScript front-end.",
-    tech: ["C# .NET", "TypeScript", "VNPay Sandbox", "SQL Server"],
-    hue: 270,
-    teamSize: 4,
-    image: "/images/projects/cvs.png",
-    githubUrl: "https://github.com/PhamVietHoangFPT/ChildrenVaccinationSystem",
-    color: "#a855f7",
-  },
-  {
-    id: 6,
-    number: "06",
-    tag: "HealthTech · Full-stack Dev",
-    title: "Child Growth Tracking",
-    description:
-      "Comprehensive child growth monitoring platform with Google OAuth authentication. Parents record and track weight, height, and developmental milestones, with VNPay-powered premium subscriptions.",
-    tech: ["C# .NET", "TypeScript", "PostgreSQL", "Google Auth", "VNPay Sandbox"],
-    hue: 190,
-    teamSize: 4,
-    image: "/images/projects/cgts.png",
-    githubUrl: "https://github.com/tykyfatkie/Child_Growth_Tracking_System_FE",
-    color: "#00e5ff",
-  },
-];
+/** Một thẻ trong băng chuyền 3D. Thẻ ở giữa nghiêng theo chuột; bấm thẻ bên cạnh để chuyển, bấm thẻ giữa để mở chi tiết. */
+const Card = ({ p, offset, onPick }: { p: Project; offset: number; onPick: (el: HTMLElement) => void }) => {
+  const inRef = useRef<HTMLDivElement>(null);
+  const [imgOk, setImgOk] = useState(true);
+  const abs = Math.abs(offset);
+  const showImg = p.image && imgOk;
 
-// ─── CARD ────────────────────────────────────────────────────
-const ProjectCard = ({ p, index }: { p: Project; index: number }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [hov, setHov]   = useState(false);
-  const [imgErr, setImgErr] = useState(false);
+  const onMove = (e: React.MouseEvent) => {
+    if (offset !== 0) return;
+    const el = inRef.current!;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.setProperty("--ry", `${px * 16}deg`);
+    el.style.setProperty("--rx", `${-py * 14}deg`);
+    el.style.setProperty("--gx", `${(px + 0.5) * 100}%`);
+    el.style.setProperty("--gy", `${(py + 0.5) * 100}%`);
+  };
+  const onLeave = () => {
+    const el = inRef.current!;
+    el.style.setProperty("--ry", "0deg");
+    el.style.setProperty("--rx", "0deg");
+  };
 
-  const onMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const r = cardRef.current!.getBoundingClientRect();
-    const dx = (e.clientX - r.left  - r.width  / 2) / (r.width  / 2);
-    const dy = (e.clientY - r.top   - r.height / 2) / (r.height / 2);
-    setTilt({ x: -dy * 7, y: dx * 7 });
-    cardRef.current!.style.setProperty("--mx", `${e.clientX - r.left}px`);
-    cardRef.current!.style.setProperty("--my", `${e.clientY - r.top}px`);
-  }, []);
-
-  const showImage = p.image && !imgErr;
+  const style = {
+    "--c": p.color,
+    transform: `translateX(calc(-50% + ${offset * GAP}px)) translateZ(${-abs * DEPTH}px) rotateY(${-offset * TURN}deg) scale(${offset === 0 ? 1 : 0.94})`,
+    zIndex: 50 - abs,
+    opacity: abs > 3 ? 0 : 1,
+    filter: offset === 0 ? "none" : `brightness(${Math.max(0.28, 0.62 - abs * 0.12)}) saturate(.8)`,
+    pointerEvents: abs > 3 ? "none" : "auto",
+  } as CSSProperties;
 
   return (
-    <motion.div data-fx="up"
-      style={{ perspective: 1200 }}
-    >
-      <motion.div
-        ref={cardRef}
-        className="proj-card"
-        /* inject màu vào CSS custom property — toàn bộ style trong projects.css
-           đều đọc từ --proj-color, không cần chỉnh CSS khi thêm project mới */
-        style={{ "--proj-color": p.color } as React.CSSProperties}
-        onMouseMove={onMove}
-        onMouseEnter={() => setHov(true)}
-        onMouseLeave={() => { setTilt({ x: 0, y: 0 }); setHov(false); }}
-        animate={{ rotateX: tilt.x, rotateY: tilt.y, y: hov ? -10 : 0 }}
-        transition={{ type: "spring", stiffness: 180, damping: 18 }}
-      >
-        {/* ── Thumbnail ── */}
-        <div className="proj-thumb">
-
-          {/* Ảnh demo (nếu có) */}
-          {showImage && (
-            <>
-              <img
-                src={p.image}
-                alt={`${p.title} demo`}
-                className="proj-thumb__img"
-                onError={() => setImgErr(true)}
-              />
-              <div className="proj-thumb__overlay" />
-            </>
-          )}
-
-          {/* Grid SVG — chỉ hiện khi không có ảnh */}
-          {!showImage && (
-            <svg className="proj-thumb__grid">
-              <defs>
-                <pattern id={`grid-${p.id}`} width="24" height="24" patternUnits="userSpaceOnUse">
-                  <path d="M 24 0 L 0 0 0 24" fill="none" stroke={p.color} strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill={`url(#grid-${p.id})`} />
-            </svg>
-          )}
-
-          {/* Watermark số */}
-          {!showImage && (
-            <span className="proj-thumb__number">{p.number}</span>
-          )}
-
-          {/* Glow */}
-          <div className="proj-thumb__glow" />
-
-          {/* Bottom line */}
-          <div className="proj-thumb__line" />
-
-          {/* Badge */}
-          <div className="proj-thumb__badge">Team {p.teamSize}</div>
+    <div className={`pj-card${offset === 0 ? " is-active" : ""}`} style={style}
+      onMouseMove={onMove} onMouseLeave={onLeave}
+      onClick={e => onPick(e.currentTarget)} data-hover>
+      <div ref={inRef} className="pj-card__in">
+        <div className="pj-card__media">
+          {showImg
+            ? <img src={p.image} alt={`${p.title} screenshot`} draggable={false} onError={() => setImgOk(false)} />
+            : <div className="pj-ph"><span>{p.number}</span></div>}
+          <span className="pj-card__shade" />
+          <span className="pj-card__team">TEAM {p.teamSize}</span>
         </div>
-
-        {/* ── Body ── */}
-        <div className="proj-body">
-          <div className="proj-tag">{p.tag}</div>
-
-          <h3 className="proj-title">{p.title}</h3>
-
-          <p className="proj-desc">{p.description}</p>
-
-          <div className="proj-pills">
-            {p.tech.map(t => (
-              <span key={t} className="proj-pill">{t}</span>
-            ))}
-          </div>
-
-          <div className="proj-links">
-            {p.githubUrl && (
-              <a
-                href={p.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="proj-link"
-              >
-                GitHub ↗
-              </a>
-            )}
-            {p.liveUrl && (
-              <a
-                href={p.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="proj-link"
-              >
-                Live ↗
-              </a>
-            )}
-          </div>
+        <div className="pj-card__text">
+          <div className="pj-card__tag">{p.tag}</div>
+          <div className="pj-card__title">{p.title}</div>
         </div>
-      </motion.div>
-    </motion.div>
+        <span className="pj-card__glare" />
+      </div>
+    </div>
   );
 };
 
-// ─── SECTION ─────────────────────────────────────────────────
-const ProjectsSection = () => (
-  <section id="projects" style={{ background: "var(--bg2)", padding: "8rem 2rem", minHeight: "100vh" }}>
-    <Backdrop kind="stream" opacity={0.5} />
-    <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 1 }}>
+const ProjectsSection = () => {
+  const { index: slideIndex, ids } = useDeck();
+  const isCurrent = ids[slideIndex] === "projects";
 
-      <motion.div data-fx="up"
-        style={{ marginBottom: "5rem" }}
-      >
-        <p className="section-label">03 / Work</p>
-        <h2 style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "clamp(2.5rem, 7vw, 5rem)",
-          lineHeight: 0.95,
-        }}>
-          SELECTED <ScrambleText text="PROJECTS" className="neon-green" />
-        </h2>
-        <span className="title-underline" />
-      </motion.div>
+  const [active, setActive] = useState(0);
+  const [detail, setDetail] = useState<{ project: Project; rect: DOMRect | null } | null>(null);
+  const dragRef = useRef<{ x: number; moved: boolean } | null>(null);
+  const suppressClick = useRef(false);
+  const cur = PROJECTS[active];
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(310px, 1fr))",
-        gap: "1.5rem",
-      }}>
-        {PROJECTS.map((p, i) => (
-          <ProjectCard key={p.id} p={p} index={i} />
-        ))}
+  const step = useCallback((d: number) => {
+    setActive(a => {
+      const n = Math.min(PROJECTS.length - 1, Math.max(0, a + d));
+      if (n !== a) playTick();
+      return n;
+    });
+  }, []);
+
+  const openDetail = (el?: HTMLElement) => {
+    const node = el ?? document.querySelector<HTMLElement>(".pj-card.is-active");
+    setDetail({ project: PROJECTS[active], rect: node ? node.getBoundingClientRect() : null });
+  };
+
+  // ←/→ chuyển thẻ, Enter mở chi tiết — chỉ khi đang ở slide Projects và chưa mở khung chi tiết
+  useEffect(() => {
+    if (!isCurrent || detail) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (document.body.dataset.modal || (e.target as HTMLElement).tagName === "INPUT") return;
+      if (e.key === "ArrowRight") step(1);
+      else if (e.key === "ArrowLeft") step(-1);
+      else if (e.key === "Enter") openDetail();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCurrent, detail, step, active]);
+
+  // Bảng lệnh Ctrl+K có thể chọn sẵn một dự án
+  useEffect(() => {
+    const onSel = (e: Event) => {
+      const id = (e as CustomEvent<number>).detail;
+      const i = PROJECTS.findIndex(p => p.id === id);
+      if (i >= 0) setActive(i);
+    };
+    window.addEventListener("app:select-project", onSel);
+    return () => window.removeEventListener("app:select-project", onSel);
+  }, []);
+
+  const pick = (i: number, el: HTMLElement) => {
+    if (suppressClick.current) return;
+    if (i === active) openDetail(el);
+    else { setActive(i); playTick(); }
+  };
+
+  // Kéo ngang để chuyển thẻ
+  const onDown = (e: React.PointerEvent) => { dragRef.current = { x: e.clientX, moved: false }; };
+  const onMoveStage = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dx = e.clientX - d.x;
+    if (Math.abs(dx) > 70) {
+      d.x = e.clientX; d.moved = true; suppressClick.current = true;
+      step(dx < 0 ? 1 : -1);
+    }
+  };
+  const onUp = () => {
+    const moved = dragRef.current?.moved;
+    dragRef.current = null;
+    if (moved) setTimeout(() => { suppressClick.current = false; }, 60);
+  };
+
+  // Đổi dự án ngay trong khung chi tiết
+  const navigateDetail = useCallback((dir: 1 | -1) => {
+    setActive(a => {
+      const n = (a + dir + PROJECTS.length) % PROJECTS.length;
+      setDetail(d => d ? { ...d, project: PROJECTS[n], rect: null } : d);
+      return n;
+    });
+  }, []);
+
+  return (
+    <section id="projects" style={{ background: "var(--bg2)", padding: "8rem 0 5rem", minHeight: "100vh", ["--pj-c" as string]: cur.color } as CSSProperties}>
+      <Backdrop kind="stream" opacity={0.42} />
+      <div className="pj-glow" />
+
+      <div className="pj-wrap">
+        <div data-fx="up" className="pj-head">
+          <div>
+            <p className="section-label">03 / Work</p>
+            <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.5rem, 7vw, 5rem)", lineHeight: 0.95 }}>
+              SELECTED <ScrambleText text="PROJECTS" className="neon-green" />
+            </h2>
+            <span className="title-underline" />
+          </div>
+          <div className="pj-count"><b>{String(active + 1).padStart(2, "0")}</b><span>/ {String(PROJECTS.length).padStart(2, "0")}</span></div>
+        </div>
+
+        {/* Băng chuyền 3D */}
+        <div data-fx="zoom" className="pj-carousel">
+          <div className="pj-stage" onPointerDown={onDown} onPointerMove={onMoveStage} onPointerUp={onUp} onPointerCancel={onUp} onPointerLeave={onUp}>
+            {PROJECTS.map((p, i) => <Card key={p.id} p={p} offset={i - active} onPick={el => pick(i, el)} />)}
+          </div>
+
+          <div className="pj-controls">
+            <button className="pj-nav" onClick={() => step(-1)} disabled={active === 0} aria-label="Previous project" data-hover>←</button>
+            <div className="pj-dots">
+              {PROJECTS.map((p, i) => (
+                <button key={p.id} className={i === active ? "is-active" : ""} style={{ "--c": p.color } as CSSProperties}
+                  onClick={() => { setActive(i); playTick(); }} aria-label={p.title} data-hover />
+              ))}
+            </div>
+            <button className="pj-nav" onClick={() => step(1)} disabled={active === PROJECTS.length - 1} aria-label="Next project" data-hover>→</button>
+          </div>
+          <p className="pj-hint">drag or ← → to browse · click the front card to open</p>
+        </div>
+
+        {/* Thông tin dự án đang chọn */}
+        <div data-fx="up">
+          <div key={cur.id} className="pj-info" style={{ "--c": cur.color } as CSSProperties}>
+            <div className="pj-info__main">
+              <h3>{cur.title}</h3>
+              <p>{cur.description}</p>
+              <div className="pj-info__pills">{cur.tech.map(t => <span key={t}>{t}</span>)}</div>
+            </div>
+            <div className="pj-info__actions">
+              <button className="pj-btn pj-btn--solid" onClick={() => openDetail()} data-hover>View case study →</button>
+              {cur.githubUrl && <a className="pj-btn" href={cur.githubUrl} target="_blank" rel="noopener noreferrer" data-hover>GitHub ↗</a>}
+              {cur.liveUrl && <a className="pj-btn" href={cur.liveUrl} target="_blank" rel="noopener noreferrer" data-hover>Live ↗</a>}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-);
+
+      {detail && (
+        <ProjectDetail
+          project={detail.project}
+          fromRect={detail.rect}
+          onNavigate={navigateDetail}
+          onClose={() => setDetail(null)}
+        />
+      )}
+    </section>
+  );
+};
 
 export default ProjectsSection;

@@ -6,6 +6,8 @@ import "./styles/about.css";
 import "./styles/hero.css";
 import "./styles/skills.css";
 import "./styles/preloader.css";
+import "./styles/projects3d.css";
+import "./styles/palette.css";
 import App from "./App";
 
 createRoot(document.getElementById("root")!).render(

@@ -4,6 +4,7 @@ import {
 } from "react";
 import { gsap } from "gsap";
 import { Warp } from "../3d/Backdrops";
+import { playWhoosh } from "../../hooks/useSound";
 
 /**
  * Chế độ "slide": mỗi section là một slide toàn màn hình.
@@ -67,6 +68,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
 
     const dir = next > from ? 1 : -1;
     busy.current = true;
+    playWhoosh(dir);
     cur.current = next;
     setIndex(next);
     history.replaceState(null, "", `#${ids[next]}`);
@@ -146,7 +148,10 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
       return dir > 0 ? el.scrollTop < max - 2 : el.scrollTop > 2;
     };
 
+    const modalOpen = () => !!document.body.dataset.modal;
+
     const onWheel = (e: WheelEvent) => {
+      if (modalOpen()) { e.preventDefault(); return; }
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || Math.abs(e.deltaY) < 4) return;
       const dir = e.deltaY > 0 ? 1 : -1;
       const now = performance.now();
@@ -159,6 +164,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     };
 
     const onKey = (e: KeyboardEvent) => {
+      if (modalOpen()) return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
       const t = e.target as HTMLElement;
       if (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable) return;
@@ -175,11 +181,13 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
 
     let startY = 0, atTop = false, atBottom = false;
     const onTouchStart = (e: TouchEvent) => {
+      if (modalOpen()) return;
       startY = e.touches[0].clientY;
       atTop = !canScroll(-1);
       atBottom = !canScroll(1);
     };
     const onTouchEnd = (e: TouchEvent) => {
+      if (modalOpen()) return;
       const dy = startY - e.changedTouches[0].clientY;
       if (Math.abs(dy) < 60) return;
       if (dy > 0 && atBottom) goTo(cur.current + 1, true);

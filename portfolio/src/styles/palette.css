@@ -1,0 +1,64 @@
+/* ============================================================
+   COMMAND PALETTE (Ctrl+K)
+   ============================================================ */
+.cp {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding-top: 16vh;
+  background: rgba(3, 3, 3, .66);
+  backdrop-filter: blur(10px);
+  animation: cpFade .25s ease-out both;
+}
+@keyframes cpFade { from { opacity: 0; } to { opacity: 1; } }
+.cp__panel {
+  width: min(660px, 92vw);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(10, 12, 10, .94);
+  border: 1px solid rgba(57, 255, 20, .38);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, .8), 0 0 70px rgba(57, 255, 20, .14);
+  animation: cpPop .4s cubic-bezier(.16, 1, .3, 1) both;
+  transform-origin: 50% 0;
+}
+@keyframes cpPop { from { opacity: 0; transform: translateY(-14px) scale(.96) perspective(800px) rotateX(8deg); } to { opacity: 1; transform: none; } }
+.cp__input { display: flex; align-items: center; gap: .8rem; padding: 1rem 1.2rem; border-bottom: 1px solid rgba(255, 255, 255, .08); }
+.cp__prompt { font-family: var(--font-mono); font-size: 1rem; color: var(--neon); text-shadow: 0 0 12px var(--neon); }
+.cp__input input {
+  flex: 1; min-width: 0;
+  background: transparent; border: 0; outline: 0;
+  font-family: var(--font-mono); font-size: .95rem; color: #f0f0f0;
+  caret-color: var(--neon);
+}
+.cp__input input::placeholder { color: #555; }
+.cp kbd {
+  font-family: var(--font-mono); font-size: .6rem; letter-spacing: .08em;
+  padding: .18rem .45rem; margin-right: .3rem;
+  color: #999; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12); border-radius: 4px;
+}
+.cp__list { max-height: min(52vh, 440px); overflow-y: auto; padding: .5rem; }
+.cp__group { padding: .8rem .8rem .35rem; font-family: var(--font-mono); font-size: .56rem; letter-spacing: .25em; text-transform: uppercase; color: var(--muted); }
+.cp__item {
+  display: flex; align-items: center; gap: .9rem; width: 100%;
+  padding: .65rem .8rem;
+  font-family: var(--font-mono); font-size: .8rem; text-align: left; color: #cfcfcf;
+  background: transparent; border: 0; border-radius: 8px; cursor: none;
+  transition: background .15s, color .15s;
+}
+.cp__item.is-sel { color: #fff; background: rgba(57, 255, 20, .1); box-shadow: inset 2px 0 0 var(--neon); }
+.cp__glyph { width: 26px; text-align: center; font-size: .9rem; color: var(--neon3); }
+.cp__item.is-sel .cp__glyph { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+.cp__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp__hint { font-size: .62rem; letter-spacing: .08em; color: #666; }
+.cp__enter { font-size: .8rem; color: var(--neon); }
+.cp__empty { padding: 2rem; text-align: center; font-family: var(--font-mono); font-size: .75rem; color: #666; }
+.cp__foot { display: flex; gap: 1.4rem; padding: .7rem 1.2rem; border-top: 1px solid rgba(255, 255, 255, .08); font-family: var(--font-mono); font-size: .58rem; letter-spacing: .1em; color: #666; }
+
+/* Gợi ý phím tắt trên thanh menu */
+.kbd-hint {
+  display: inline-flex; align-items: center; gap: .25rem; height: 30px; padding: 0 .6rem;
+  color: var(--muted); background: rgba(255, 255, 255, .03); border: 1px solid rgba(255, 255, 255, .12); border-radius: 6px;
+  font-family: var(--font-mono); font-size: .6rem; letter-spacing: .08em; cursor: none; transition: all .3s;
+}
+.kbd-hint:hover { color: var(--neon); border-color: var(--neon); }
+.kbd-hint kbd { font-family: inherit; padding: .1rem .35rem; border: 1px solid currentColor; border-radius: 3px; opacity: .85; }
+@media (max-width: 1250px) { .kbd-hint { display: none; } }

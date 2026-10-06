@@ -72,6 +72,9 @@ const Navbar = () => {
             )}
           </a>
         ))}
+        <button className="kbd-hint" data-hover onClick={() => window.dispatchEvent(new Event("app:palette"))} title="Command palette">
+          <kbd>{/Mac/i.test(navigator.platform) ? "⌘" : "Ctrl"}</kbd><kbd>K</kbd>
+        </button>
         <AudioWave />
         <a
           href="#contact"

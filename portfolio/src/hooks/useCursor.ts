@@ -7,6 +7,8 @@ const HOVER_SEL = [
   "button",
   "[data-hover]",
   ".proj-card",
+  ".pj-card",
+  ".cp__item",
   ".proj-link",
   ".proj-pill",
   ".form-input",

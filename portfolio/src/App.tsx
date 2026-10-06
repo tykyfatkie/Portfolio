@@ -8,6 +8,7 @@ import ContactSection from "./components/sections/ContactSection";
 import AudioController from "./components/ui/AudioController";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import Preloader from "./components/ui/Preloader";
+import CommandPalette from "./components/ui/CommandPalette";
 import { DeckProvider, SlideDeck } from "./components/ui/SlideDeck";
 
 const SLIDE_IDS    = ["hero", "about", "skills", "projects", "contact"];
@@ -140,6 +141,7 @@ const Main = () => {
           <Footer />
         </>
       </SlideDeck>
+      <CommandPalette />
       <ClickPrompt visible={prompted} />
     </DeckProvider>
   );
