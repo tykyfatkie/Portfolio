@@ -55,36 +55,46 @@
 /* Sàn lưới sáng lên theo bass */
 .hero-floor { filter: brightness(calc(1 + var(--beat, 0) * 1.4)); }
 
-/* Sóng âm nhỏ trên thanh menu */
+/* Sóng âm trên thanh menu: to, nhiều thanh, đổi màu dải neon, phát sáng khi nhạc chạy */
 .audio-wave {
   display: inline-flex;
   align-items: center;
-  gap: .55rem;
-  height: 30px;
-  padding: 0 .75rem;
+  gap: .8rem;
+  height: 46px;
+  padding: 0 1rem 0 .9rem;
   background: rgba(255, 255, 255, .03);
-  border: 1px solid rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .14);
   border-radius: 999px;
   color: var(--muted);
   cursor: none;
   transition: border-color .3s, color .3s, background .3s, box-shadow .3s;
 }
-.audio-wave:hover { border-color: var(--neon); color: var(--neon); }
+.audio-wave:hover { border-color: var(--neon); }
 .audio-wave.is-on {
   color: var(--neon);
-  border-color: rgba(57, 255, 20, .45);
+  border-color: rgba(57, 255, 20, .5);
   background: rgba(57, 255, 20, .06);
-  box-shadow: 0 0 18px rgba(57, 255, 20, .16);
+  box-shadow: 0 0 26px rgba(57, 255, 20, .22), inset 0 0 18px rgba(57, 255, 20, .06);
 }
-.audio-wave__bars { display: inline-flex; align-items: center; gap: 2px; height: 16px; }
+.audio-wave__bars { display: inline-flex; align-items: center; gap: 3px; height: 30px; }
 .audio-wave__bars span {
   display: block;
-  width: 2px; height: 16px;
-  border-radius: 2px;
+  width: 3px; height: 30px;
+  border-radius: 3px;
   background: currentColor;
+  opacity: .55;
   transform-origin: center;
   transform: scaleY(.14);
   will-change: transform;
 }
-.audio-wave__label { font-family: var(--font-mono); font-size: .6rem; letter-spacing: .15em; }
-@media (max-width: 720px) { .audio-wave__label { display: none; } }
+.audio-wave.is-on .audio-wave__bars span {
+  background: var(--c, var(--neon));
+  opacity: 1;
+  box-shadow: 0 0 8px var(--c, var(--neon));
+}
+.audio-wave__label { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; font-family: var(--font-mono); line-height: 1; }
+.audio-wave__label b { font-weight: 700; font-size: .6rem; letter-spacing: .22em; color: #ccc; }
+.audio-wave__label i { font-style: normal; font-size: .58rem; letter-spacing: .2em; }
+.audio-wave.is-on .audio-wave__label i { color: var(--neon); }
+@media (max-width: 1100px) { .audio-wave__label { display: none; } .audio-wave { padding: 0 .8rem; } }
+@media (max-width: 720px) { .audio-wave { height: 38px; } .audio-wave__bars span:nth-child(odd) { display: none; } }
