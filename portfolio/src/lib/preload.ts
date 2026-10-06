@@ -118,13 +118,15 @@ const tasks: Task[] = [
 ];
 
 /** Chạy tất cả task song song. `onProgress(0..1, nhãn task đang tải)`. */
-export async function preloadAll(onProgress: (p: number, label: string) => void) {
+export interface TaskDetail { label: string; frac: number }
+
+export async function preloadAll(onProgress: (p: number, label: string, detail: TaskDetail[]) => void) {
   const fr = tasks.map(() => 0);
   const total = tasks.reduce((a, t) => a + t.weight, 0);
   const emit = () => {
     const p = tasks.reduce((a, t, i) => a + t.weight * fr[i], 0) / total;
     const pending = tasks.findIndex((_, i) => fr[i] < 1);
-    onProgress(p, pending >= 0 ? tasks[pending].label : "Ready");
+    onProgress(p, pending >= 0 ? tasks[pending].label : "Ready", tasks.map((t, i) => ({ label: t.label, frac: fr[i] })));
   };
   emit();
   await Promise.all(tasks.map((t, i) =>

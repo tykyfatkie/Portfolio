@@ -5,6 +5,7 @@ import "./styles/enhance.css";
 import "./styles/about.css";
 import "./styles/hero.css";
 import "./styles/skills.css";
+import "./styles/preloader.css";
 import App from "./App";
 
 createRoot(document.getElementById("root")!).render(

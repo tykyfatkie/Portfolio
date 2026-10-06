@@ -1,0 +1,104 @@
+/* ============================================================
+   PRELOADER — chữ ghép từ hạt sáng + tiến độ chi tiết
+   ============================================================ */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  overflow: hidden;
+  cursor: none;
+}
+.preloader__half {
+  position: absolute;
+  left: 0; right: 0;
+  height: 50.5%;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(57, 255, 20, .07), transparent 60%),
+    var(--bg);
+}
+.preloader__half--top { top: 0;    border-bottom: 1px solid rgba(57, 255, 20, .55); box-shadow: 0 1px 28px rgba(57, 255, 20, .4); }
+.preloader__half--bot { bottom: 0; }
+/* lưới mờ nền */
+.preloader__half::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(57, 255, 20, .045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, .045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 50% 50%, #000 15%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 15%, transparent 72%);
+}
+
+.preloader__canvas { position: absolute; inset: 0; z-index: 1; display: block; }
+
+/* Bốn góc khung + chú thích */
+.preloader__corners { position: absolute; inset: 1.6rem; z-index: 2; pointer-events: none; }
+.preloader__corners i {
+  position: absolute; width: 22px; height: 22px;
+  border: 1px solid rgba(57, 255, 20, .55);
+}
+.preloader__corners i:nth-child(1) { left: 0;  top: 0;    border-right: 0; border-bottom: 0; }
+.preloader__corners i:nth-child(2) { right: 0; top: 0;    border-left: 0;  border-bottom: 0; }
+.preloader__corners i:nth-child(3) { left: 0;  bottom: 0; border-right: 0; border-top: 0; }
+.preloader__corners i:nth-child(4) { right: 0; bottom: 0; border-left: 0;  border-top: 0; }
+.preloader__tl, .preloader__tr {
+  position: absolute; top: .2rem;
+  font-family: var(--font-mono); font-size: .58rem; letter-spacing: .25em; color: var(--muted);
+}
+.preloader__tl { left: 2.2rem; }
+.preloader__tr { right: 2.2rem; }
+
+/* Khối tiến độ ở phần dưới màn hình */
+.preloader__ui {
+  position: absolute; z-index: 2;
+  left: 50%; bottom: 8vh;
+  width: min(580px, 86vw);
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 1.1rem;
+  text-align: center;
+}
+.preloader__num {
+  font-family: var(--font-display);
+  font-size: clamp(3.4rem, 9vw, 6rem);
+  line-height: .9;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 40px rgba(57, 255, 20, .25);
+}
+.preloader__num small { font-size: .38em; margin-left: .15em; color: var(--neon); }
+.preloader__bar { position: relative; width: 100%; height: 3px; background: rgba(255, 255, 255, .08); border-radius: 2px; }
+.preloader__bar > span {
+  position: absolute; inset: 0;
+  transform-origin: left;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--neon), var(--neon3), var(--neon2));
+  box-shadow: 0 0 14px var(--neon);
+}
+/* đầu thanh sáng như sao chổi */
+.preloader__bar > span::after {
+  content: ""; position: absolute; right: -4px; top: 50%;
+  width: 9px; height: 9px; margin-top: -4.5px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 14px 5px var(--neon2);
+}
+
+.preloader__tasks { list-style: none; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: .9rem; padding: 0; margin: 0; }
+.preloader__tasks li { text-align: left; opacity: .5; transition: opacity .3s; }
+.preloader__tasks li.is-run, .preloader__tasks li.is-done { opacity: 1; }
+.preloader__task-name {
+  display: flex; justify-content: space-between; margin-bottom: .4rem;
+  font-family: var(--font-mono); font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: #aaa;
+}
+.preloader__task-name em { font-style: normal; color: var(--neon3); }
+.preloader__tasks li.is-done .preloader__task-name em { color: var(--neon); }
+.preloader__task-bar { display: block; position: relative; height: 2px; background: rgba(255, 255, 255, .08); }
+.preloader__task-bar > span { position: absolute; inset: 0; transform-origin: left; background: var(--neon3); box-shadow: 0 0 8px var(--neon3); }
+.preloader__tasks li.is-done .preloader__task-bar > span { background: var(--neon); box-shadow: 0 0 8px var(--neon); }
+
+.preloader__label { font-family: var(--font-mono); font-size: .64rem; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); }
+.preloader__label b { color: var(--neon3); font-weight: 400; }
+
+@media (max-width: 640px) {
+  .preloader__tasks { grid-template-columns: repeat(2, 1fr); }
+  .preloader__tl, .preloader__tr { display: none; }
+}

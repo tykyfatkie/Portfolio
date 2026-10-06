@@ -1,0 +1,176 @@
+import { useEffect, useRef, type MutableRefObject } from "react";
+
+/**
+ * Chữ TYPHAT.DEV ghép từ hàng nghìn hạt sáng (Canvas 2D).
+ * Tiến độ tải càng cao, hạt càng hội tụ về đúng vị trí của chữ; lúc 0% chúng xoay hỗn loạn quanh tâm.
+ * Hạt né con trỏ chuột. `handle.current.burst()` làm cả đám hạt nổ tung ra khi tải xong.
+ */
+export interface ParticlesHandle { burst: () => void }
+
+interface Props {
+  /** Tiến độ hiển thị 0..1 (đã làm mượt), đọc mỗi frame */
+  progress: MutableRefObject<number>;
+  handle: MutableRefObject<ParticlesHandle | null>;
+  text?: string;
+}
+
+interface P {
+  x: number; y: number;           // vị trí đang vẽ
+  tx: number; ty: number;         // vị trí đích (nằm trên nét chữ)
+  ang: number; rad: number; spd: number; delay: number;
+  vx: number; vy: number;
+  bucket: number; size: number; seed: number;
+}
+
+const BUCKETS = 14;
+const hueOf = (b: number) => 115 + (b / (BUCKETS - 1)) * 215;   // xanh lá → xanh lơ → xanh dương → hồng
+const smooth = (t: number) => t * t * (3 - 2 * t);
+
+const LoaderParticles = ({ progress, handle, text = "TYPHAT.DEV" }: Props) => {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let w = 0, h = 0, cx = 0, cy = 0, raf = 0, alive = true;
+    let parts: P[] = [];
+    let bursting = false, burstT = 0, last = performance.now(), t = 0;
+    const mouse = { x: -9999, y: -9999 };
+
+    const build = async () => {
+      try { await document.fonts.load("200px 'Bebas Neue'"); } catch { /* dùng font dự phòng */ }
+      if (!alive) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth; h = window.innerHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      canvas.style.width = w + "px"; canvas.style.height = h + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cx = w / 2; cy = h * 0.4;
+
+      // Lấy mẫu điểm từ chữ vẽ trên canvas phụ
+      const off = document.createElement("canvas");
+      off.width = w; off.height = h;
+      const o = off.getContext("2d", { willReadFrequently: true })!;
+      const fs = Math.min(w * 0.16, h * 0.3);
+      o.font = `${fs}px 'Bebas Neue', Impact, sans-serif`;
+      o.textAlign = "center"; o.textBaseline = "middle"; o.fillStyle = "#fff";
+      o.fillText(text, cx, cy);
+      const img = o.getImageData(0, 0, w, h).data;
+
+      let step = w < 700 ? 3 : 4;
+      let pts: [number, number][] = [];
+      for (;;) {
+        pts = [];
+        for (let y = 0; y < h; y += step)
+          for (let x = 0; x < w; x += step)
+            if (img[(y * w + x) * 4 + 3] > 128) pts.push([x, y]);
+        if (pts.length <= 3600 || step > 9) break;
+        step++;
+      }
+
+      const minX = Math.min(...pts.map(p => p[0])), maxX = Math.max(...pts.map(p => p[0]));
+      const span = Math.max(maxX - minX, 1);
+      const reach = Math.min(w, h) * 0.5;
+      parts = pts.map(([x, y]) => {
+        const bucket = Math.min(BUCKETS - 1, Math.floor(((x - minX) / span) * BUCKETS));
+        return {
+          x: cx, y: cy, tx: x + (Math.random() - 0.5) * 1.2, ty: y + (Math.random() - 0.5) * 1.2,
+          ang: Math.random() * Math.PI * 2,
+          rad: 60 + Math.pow(Math.random(), 0.7) * reach,
+          spd: (0.25 + Math.random() * 0.7) * (Math.random() < 0.5 ? -1 : 1),
+          delay: Math.random() * 0.5,
+          vx: 0, vy: 0, bucket,
+          size: step <= 3 ? 1.8 : 2.4,
+          seed: Math.random() * 10,
+        };
+      }).sort((a, b) => a.bucket - b.bucket);
+    };
+
+    const onMove = (e: PointerEvent) => { mouse.x = e.clientX; mouse.y = e.clientY; };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    let resizeTimer = 0;
+    const onResize = () => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(() => { if (!bursting) build(); }, 200); };
+    window.addEventListener("resize", onResize);
+
+    handle.current = {
+      burst: () => {
+        bursting = true; burstT = 0;
+        parts.forEach(p => {
+          const a = Math.atan2(p.y - cy, p.x - cx) + (Math.random() - 0.5) * 1.2;
+          const v = 3 + Math.random() * 13;
+          p.vx = Math.cos(a) * v; p.vy = Math.sin(a) * v;
+        });
+      },
+    };
+
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      t += dt;
+      if (!w) return;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "lighter";
+      const prog = progress.current;
+      if (bursting) burstT += dt;
+
+      let curBucket = -1;
+      for (const p of parts) {
+        let g = 0;
+        if (bursting) {
+          p.x += p.vx * dt * 60; p.y += p.vy * dt * 60;
+          p.vx *= 0.985; p.vy *= 0.985;
+          ctx.globalAlpha = Math.max(0, 1 - burstT / 0.95);
+        } else {
+          g = smooth(Math.min(1, Math.max(0, (prog - p.delay * 0.8) / (1 - p.delay * 0.8))));
+          p.ang += p.spd * dt * (1 - g * 0.92);
+          const ox = cx + Math.cos(p.ang) * p.rad * 1.6;
+          const oy = cy + Math.sin(p.ang) * p.rad * 0.7;
+          let x = ox + (p.tx - ox) * g;
+          let y = oy + (p.ty - oy) * g;
+          if (g > 0.98) { x += Math.sin(t * 2 + p.seed) * 0.9; y += Math.cos(t * 2.3 + p.seed) * 0.9; } // thở nhẹ khi đã thành chữ
+
+          // né con trỏ
+          const dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
+          if (d2 < 120 * 120 && d2 > 0.01) {
+            const d = Math.sqrt(d2), push = (1 - d / 120) * 42;
+            x += (dx / d) * push; y += (dy / d) * push;
+          }
+          p.x = x; p.y = y;
+          ctx.globalAlpha = 0.5 + 0.5 * g;
+        }
+        if (p.bucket !== curBucket) { curBucket = p.bucket; ctx.fillStyle = `hsl(${hueOf(p.bucket)} 100% 60%)`; }
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+
+      // con trỏ tự vẽ (con trỏ hệ thống bị ẩn trong màn hình loading)
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+      if (mouse.x > -999) {
+        ctx.strokeStyle = "rgba(57,255,20,.85)"; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 16, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = "#39ff14";
+        ctx.beginPath(); ctx.arc(mouse.x, mouse.y, 2.5, 0, Math.PI * 2); ctx.fill();
+      }
+    };
+
+    build().then(() => { if (alive) raf = requestAnimationFrame(tick); });
+
+    return () => {
+      alive = false;
+      cancelAnimationFrame(raf);
+      clearTimeout(resizeTimer);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("resize", onResize);
+      handle.current = null;
+    };
+  }, [progress, handle, text]);
+
+  return <canvas ref={ref} className="preloader__canvas" aria-hidden />;
+};
+
+export default LoaderParticles;
