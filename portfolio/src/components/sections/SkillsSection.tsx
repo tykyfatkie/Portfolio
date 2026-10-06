@@ -45,12 +45,12 @@ const Ring = ({ level, color }: { level: number; color: string }) => {
   }, [level, C]);
 
   return (
-    <span className="ring" style={{ "--c": color } as CSSProperties}>
-      <svg viewBox="0 0 48 48" width="52" height="52">
-        <circle cx="24" cy="24" r={R} className="ring__bg" />
-        <circle ref={arc} cx="24" cy="24" r={R} className="ring__arc" strokeDasharray={C} strokeDashoffset={C} />
+    <span className="sring" style={{ "--c": color } as CSSProperties}>
+      <svg viewBox="0 0 48 48" width="46" height="46">
+        <circle cx="24" cy="24" r={R} className="sring__bg" />
+        <circle ref={arc} cx="24" cy="24" r={R} className="sring__arc" strokeDasharray={C} strokeDashoffset={C} />
       </svg>
-      <span ref={num} className="ring__num">0</span>
+      <span ref={num} className="sring__num">0</span>
     </span>
   );
 };
