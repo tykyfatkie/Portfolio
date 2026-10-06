@@ -59,3 +59,8 @@ export function toggleMusic() {
 
 export const subscribeMusic = (l: () => void) => { listeners.add(l); return () => { listeners.delete(l); }; };
 export const isPlaying = () => playing;
+
+/** Chỉ bật nếu đang tắt (không đảo trạng thái) — dùng cho "click bất kỳ đâu để bắt đầu". */
+export function startMusic() {
+  if (ensureAudio().paused) toggleMusic();
+}

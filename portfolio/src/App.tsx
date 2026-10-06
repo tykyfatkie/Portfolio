@@ -13,7 +13,7 @@ import { DeckProvider, SlideDeck } from "./components/ui/SlideDeck";
 const SLIDE_IDS    = ["hero", "about", "skills", "projects", "contact"];
 const SLIDE_LABELS = ["Home", "About", "Skills", "Work", "Contact"];
 import { useCursor } from "./hooks/useCursor";
-import { useBackgroundMusic } from "./hooks/useBackgroundMusic";
+import { startMusic } from "./lib/music";
 import { bootAudio } from "./hooks/useSound";
 
 const Footer = () => (
@@ -96,7 +96,6 @@ const ClickPrompt = ({ visible }: { visible: boolean }) => (
 
 const Main = () => {
   useCursor();
-  const { toggle, playing } = useBackgroundMusic();
   const [prompted, setPrompted] = useState(true); // hiện ngay khi load
 
   useEffect(() => {
@@ -104,27 +103,25 @@ const Main = () => {
   }, []);
 
   useEffect(() => {
-    const startMusic = () => {
-      if (!playing) {
-        bootAudio();
-        toggle();
-      }
+    const onFirstInteraction = () => {
+      bootAudio();
+      startMusic(); // chỉ bật, không đảo trạng thái
       setPrompted(false); // ẩn hộp thông báo
-      window.removeEventListener("click", startMusic);
-      window.removeEventListener("keydown", startMusic);
-      window.removeEventListener("scroll", startMusic);
+      window.removeEventListener("click", onFirstInteraction);
+      window.removeEventListener("keydown", onFirstInteraction);
+      window.removeEventListener("scroll", onFirstInteraction);
     };
 
-    window.addEventListener("click", startMusic);
-    window.addEventListener("keydown", startMusic);
-    window.addEventListener("scroll", startMusic);
+    window.addEventListener("click", onFirstInteraction);
+    window.addEventListener("keydown", onFirstInteraction);
+    window.addEventListener("scroll", onFirstInteraction);
 
     return () => {
-      window.removeEventListener("click", startMusic);
-      window.removeEventListener("keydown", startMusic);
-      window.removeEventListener("scroll", startMusic);
+      window.removeEventListener("click", onFirstInteraction);
+      window.removeEventListener("keydown", onFirstInteraction);
+      window.removeEventListener("scroll", onFirstInteraction);
     };
-  }, [playing, toggle]);
+  }, []);
 
   return (
     <DeckProvider ids={SLIDE_IDS} labels={SLIDE_LABELS}>

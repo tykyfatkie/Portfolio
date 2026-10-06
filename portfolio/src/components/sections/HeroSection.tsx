@@ -223,7 +223,7 @@ const HeroSection = () => {
           transition={{ delay: .9 }}
           style={{
             fontSize: "clamp(.85rem, 1.8vw, 1rem)",
-            color: "#666",
+            color: "#9a9a9a",
             maxWidth: 520,
             margin: "0 auto 3rem",
             lineHeight: 1.9,
