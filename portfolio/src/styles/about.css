@@ -88,16 +88,17 @@
 .pc__live i { width: 6px; height: 6px; border-radius: 50%; background: var(--neon); box-shadow: 0 0 10px var(--neon); animation: ping2 1.6s ease-in-out infinite; }
 @keyframes ping2 { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
 .pc__initials {
-  position: absolute; left: 0; right: 0; top: 24%;
+  position: absolute; left: 0; right: 0; top: 55%;
   text-align: center;
   font-family: var(--font-display);
-  font-size: clamp(5.5rem, 17vw, 8.4rem);
+  font-size: clamp(4.6rem, 14vw, 6.4rem);
   line-height: .9; letter-spacing: .02em;
   color: transparent;
   -webkit-text-stroke: 1.5px var(--neon);
-  filter: drop-shadow(0 0 16px rgba(57, 255, 20, .55));
-  transform: translateZ(95px);
+  filter: drop-shadow(0 0 14px rgba(57, 255, 20, .6));
+  transform: translateZ(115px);
   user-select: none;
+  pointer-events: none;
 }
 .pc__info { position: absolute; left: 1.4rem; right: 1.4rem; bottom: 1.5rem; transform: translateZ(75px); }
 .pc__name { font-family: var(--font-display); font-size: 1.7rem; letter-spacing: .04em; line-height: 1; color: var(--text); }
@@ -155,3 +156,41 @@
   .about-stats { grid-template-columns: repeat(2, 1fr); }
   .pc__orbit { inset: -20% -20%; }
 }
+
+/* Ảnh chân dung trong thẻ */
+.pc__photo {
+  position: absolute;
+  left: 1.1rem; right: 1.1rem; top: 11%; height: 53%;
+  border-radius: 14px;
+  overflow: hidden;
+  transform: translateZ(62px);
+  border: 1px solid rgba(57, 255, 20, .4);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .6), 0 0 28px rgba(57, 255, 20, .18);
+}
+.pc__photo img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 18%;
+  display: block;
+  filter: saturate(.9) contrast(1.06) brightness(.95);
+  transform: scale(1.04);
+  transition: transform .8s cubic-bezier(.16, 1, .3, 1), filter .5s;
+}
+.pc:hover .pc__photo img { transform: scale(1.1); filter: saturate(1) contrast(1.08) brightness(1); }
+/* phủ màu neon nhẹ + làm tối đáy cho chữ PHAT nổi lên */
+.pc__photo-tint {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(8, 10, 8, .92) 0%, rgba(8, 10, 8, 0) 48%),
+    linear-gradient(135deg, rgba(57, 255, 20, .22), rgba(0, 207, 255, .10) 55%, rgba(255, 45, 120, .20));
+  mix-blend-mode: normal;
+}
+/* vệt quét chạy dọc ảnh */
+.pc__photo-scan {
+  position: absolute; left: 0; right: 0; height: 36%; top: -40%; pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(57, 255, 20, .22), transparent);
+  animation: photoScan 4.5s ease-in-out infinite;
+}
+@keyframes photoScan { 0% { top: -40%; } 60%, 100% { top: 110%; } }
+.pc__photo-c { position: absolute; width: 16px; height: 16px; border: 2px solid var(--neon); pointer-events: none; filter: drop-shadow(0 0 6px var(--neon)); }
+.pc__photo-c--tl { left: 8px; top: 8px; border-right: 0; border-bottom: 0; }
+.pc__photo-c--br { right: 8px; bottom: 8px; border-left: 0; border-top: 0; }

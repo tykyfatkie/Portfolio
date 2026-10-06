@@ -30,8 +30,12 @@ const Preloader = ({ onReady, onDone }: Props) => {
     let raf = 0, finished = false, cancelled = false;
 
     // Số hiển thị đuổi theo tiến độ thật → chạy mượt, không nhảy cóc
+    let lastT = performance.now();
     const tick = () => {
-      shown.current += (target.current - shown.current) * 0.06;
+      const now = performance.now();
+      const dt = Math.min((now - lastT) / 1000, 0.25);
+      lastT = now;
+      shown.current += (target.current - shown.current) * (1 - Math.exp(-dt * 3.6));
       if (target.current - shown.current < 0.0015) shown.current = target.current;
       setPct(Math.round(shown.current * 100));
       if (!finished || shown.current < 1) raf = requestAnimationFrame(tick);

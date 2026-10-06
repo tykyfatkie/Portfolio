@@ -56,6 +56,14 @@ const ProfileCard3D = () => {
             <span className="pc__live"><i />ONLINE</span>
           </div>
 
+          {/* Ảnh chân dung: nằm ở lớp giữa, chữ PHAT nổi phía trước tạo chiều sâu */}
+          <div className="pc__photo">
+            <img src="/images/about/typhat.jpg" alt="Nguyễn Tăng Tài Phát" draggable={false} />
+            <span className="pc__photo-tint" />
+            <span className="pc__photo-scan" />
+            <i className="pc__photo-c pc__photo-c--tl" /><i className="pc__photo-c pc__photo-c--br" />
+          </div>
+
           <div className="pc__initials" aria-hidden>PHAT</div>
 
           <div className="pc__info">
