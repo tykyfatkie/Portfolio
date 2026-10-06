@@ -1,9 +1,14 @@
-import { Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { gsap } from "gsap";
 import SplitChars from "../ui/SplitChars";
 import Magnetic from "../ui/Magnetic";
 import Backdrop, { Warp } from "../3d/Backdrops";
+
+const HeroShapes = lazy(() => import("../3d/HeroShapes"));
+
+const EXTRUDE_LAYERS = 12;
+const EXTRUDE_STEP = 6;
 
 const ROLES = ["Backend Developer", "NestJS · PHP · MariaDB", "Flutter & Mobile Builder", "Full-stack Engineer"];
 
@@ -27,7 +32,7 @@ const HeroSection = () => {
       const nx = e.clientX / window.innerWidth - 0.5, ny = e.clientY / window.innerHeight - 0.5;
       bgX(-nx * 40); bgY(-ny * 30);
       bX(nx * 70);   bY(ny * 50);
-      rY(nx * 9);    rX(-ny * 7);
+      rY(nx * 15);   rX(-ny * 11);
     };
     window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
@@ -93,6 +98,11 @@ const HeroSection = () => {
         <Backdrop kind="liquid" opacity={0.55} blend="screen" vignette={false} />
       </div>
 
+      {/* Lớp 4: khối 3D viền neon ở nhiều độ sâu + đường hầm vòng tròn, nhảy theo nhạc (Three.js) */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none" }}>
+        <Suspense fallback={null}><HeroShapes /></Suspense>
+      </div>
+
       {/* Vignette giữ chữ dễ đọc */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
@@ -118,6 +128,10 @@ const HeroSection = () => {
 
       <div ref={stageRef} className="hero-stage" style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "2rem", maxWidth: 900, width: "100%" }}>
 
+        {/* Hai vòng quỹ đạo nghiêng, xoay quanh khối chữ (nằm trong cùng ngữ cảnh 3D nên xuyên qua chữ) */}
+        <div className="hero-ring hero-ring--a" aria-hidden />
+        <div className="hero-ring hero-ring--b" aria-hidden />
+
         {/* Eyebrow */}
         <motion.div data-fx="up"
           initial={{ opacity: 0, y: 20 }}
@@ -142,7 +156,7 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Name */}
-        <h1 data-fx="zoom"
+        <h1 data-fx="zoom" className="xt-title"
           ref={nameRef}
           style={{
             fontFamily: "var(--font-display)",
@@ -153,11 +167,23 @@ const HeroSection = () => {
             opacity: 0,
           }}
         >
-          <span className="glitch-wrap" data-text="NGUYEN">NGUYEN</span>
+          <span className="xt-front">
+            <span className="glitch-wrap" data-text="NGUYEN">NGUYEN</span>
           <br />
           <span style={{ color: "var(--neon)", textShadow: "0 0 40px rgba(57,255,20,0.4)" }}><SplitChars text="TANG TAI" delay={0.7} /></span>
           <br />
           <SplitChars text="PHAT" delay={1.1} />
+          </span>
+          {/* Các lớp phía sau tạo độ dày; tách ra theo trục Z khi khối chữ nghiêng theo chuột */}
+          {Array.from({ length: EXTRUDE_LAYERS }, (_, i) => (
+            <span key={i} className="xt-back" aria-hidden style={{
+              transform: `translateZ(${-(i + 1) * EXTRUDE_STEP}px)`,
+              color: `hsl(112 ${70 - i * 3}% ${24 - i * 1.4}%)`,
+              animationDelay: `${2.2 + i * 0.03}s`,
+            }}>
+              NGUYEN<br />TANG TAI<br />PHAT
+            </span>
+          ))}
         </h1>
 
         {/* Divider line */}

@@ -1,28 +1,8 @@
-import { assets } from "../lib/preload";
-import { useRef, useState, useCallback } from "react";
+import { useSyncExternalStore } from "react";
+import { isPlaying, subscribeMusic, toggleMusic } from "../lib/music";
 
+/** Trạng thái nhạc nền dùng chung: mọi component gọi hook này đều điều khiển cùng một bản nhạc. */
 export function useBackgroundMusic() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [playing, setPlaying] = useState(false);
-
-  const toggle = useCallback(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(assets.music);
-      audioRef.current.loop = true;
-    }
-
-    const audio = audioRef.current;
-
-    if (audio.paused) {
-      audio.volume = 0.8;
-      audio.play()
-        .then(() => setPlaying(true))
-        .catch(err => console.error("[music] ✗ failed:", err));
-    } else {
-      audio.pause(); // ← pause thẳng, không fade
-      setPlaying(false);
-    }
-  }, []);
-
-  return { playing, toggle };
+  const playing = useSyncExternalStore(subscribeMusic, isPlaying);
+  return { playing, toggle: toggleMusic };
 }

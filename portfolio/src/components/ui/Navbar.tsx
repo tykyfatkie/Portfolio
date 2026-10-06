@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { useDeck } from "./SlideDeck";
+import AudioWave from "./AudioWave";
 
 const NAV = [
   { label: "About",    href: "#about" },
@@ -71,6 +72,7 @@ const Navbar = () => {
             )}
           </a>
         ))}
+        <AudioWave />
         <a
           href="#contact"
           style={{

@@ -1,0 +1,90 @@
+/* ============================================================
+   HERO — chữ nổi khối 3D, vòng quỹ đạo, sóng âm
+   ============================================================ */
+
+/* Khối chữ nhiều lớp: lớp trước là chữ thật, các lớp sau xếp lùi theo trục Z tạo độ dày */
+.hero-stage { transform-style: preserve-3d; will-change: transform; }
+.xt-title { position: relative; transform-style: preserve-3d; }
+.xt-front { display: block; position: relative; }
+.xt-back {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  display: block;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  animation: xtIn .9s ease-out both;
+}
+@keyframes xtIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Vòng quỹ đạo nghiêng quanh khối chữ, có chấm sáng chạy dọc */
+.hero-ring {
+  --d: min(1120px, 94vw);
+  position: absolute;
+  left: 50%; top: 50%;
+  width: var(--d); height: var(--d);
+  margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius: 50%;
+  border: 1px solid rgba(57, 255, 20, .38);
+  box-shadow: 0 0 calc(18px + var(--beat, 0) * 40px) rgba(57, 255, 20, .28), inset 0 0 22px rgba(57, 255, 20, .10);
+  transform-style: preserve-3d;
+  pointer-events: none;
+  animation: ringSpinA 24s linear infinite;
+}
+.hero-ring::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: -6px;
+  width: 12px; height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 18px 6px var(--neon);
+}
+.hero-ring--b {
+  --d: min(860px, 78vw);
+  border-color: rgba(0, 207, 255, .40);
+  box-shadow: 0 0 calc(18px + var(--beat, 0) * 40px) rgba(0, 207, 255, .28), inset 0 0 22px rgba(0, 207, 255, .10);
+  animation: ringSpinB 17s linear infinite reverse;
+}
+.hero-ring--b::after { background: #fff; box-shadow: 0 0 18px 6px var(--neon3); }
+@keyframes ringSpinA { from { transform: rotateX(74deg) rotateY(0deg) rotateZ(0deg); } to { transform: rotateX(74deg) rotateY(0deg) rotateZ(360deg); } }
+@keyframes ringSpinB { from { transform: rotateX(62deg) rotateY(26deg) rotateZ(0deg); } to { transform: rotateX(62deg) rotateY(26deg) rotateZ(360deg); } }
+
+/* Sàn lưới sáng lên theo bass */
+.hero-floor { filter: brightness(calc(1 + var(--beat, 0) * 1.4)); }
+
+/* Sóng âm nhỏ trên thanh menu */
+.audio-wave {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  height: 30px;
+  padding: 0 .75rem;
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: none;
+  transition: border-color .3s, color .3s, background .3s, box-shadow .3s;
+}
+.audio-wave:hover { border-color: var(--neon); color: var(--neon); }
+.audio-wave.is-on {
+  color: var(--neon);
+  border-color: rgba(57, 255, 20, .45);
+  background: rgba(57, 255, 20, .06);
+  box-shadow: 0 0 18px rgba(57, 255, 20, .16);
+}
+.audio-wave__bars { display: inline-flex; align-items: center; gap: 2px; height: 16px; }
+.audio-wave__bars span {
+  display: block;
+  width: 2px; height: 16px;
+  border-radius: 2px;
+  background: currentColor;
+  transform-origin: center;
+  transform: scaleY(.14);
+  will-change: transform;
+}
+.audio-wave__label { font-family: var(--font-mono); font-size: .6rem; letter-spacing: .15em; }
+@media (max-width: 720px) { .audio-wave__label { display: none; } }

@@ -49,3 +49,8 @@ export function playClick() {
   g.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
   osc.start(t); osc.stop(t + 0.17);
 }
+
+/** AudioContext dùng chung (đã mở sau thao tác người dùng), hoặc null nếu chưa boot. */
+export function getAudioContext(): AudioContext | null {
+  return getAC();
+}
