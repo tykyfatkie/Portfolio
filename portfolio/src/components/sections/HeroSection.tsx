@@ -90,13 +90,13 @@ const HeroSection = () => {
 
       {/* Lớp 3: khối kim loại lỏng 3D (ThreeUI LiquidForm), trôi theo chuột */}
       <div ref={blobRef} style={{ position: "absolute", inset: "-3%", zIndex: 1, pointerEvents: "none" }}>
-        <Backdrop kind="liquid" opacity={0.85} blend="screen" vignette={false} />
+        <Backdrop kind="liquid" opacity={0.55} blend="screen" vignette={false} />
       </div>
 
       {/* Vignette giữ chữ dễ đọc */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
-        background: "radial-gradient(ellipse at center, rgba(5,5,5,0.45) 0%, rgba(5,5,5,0.15) 45%, var(--bg) 100%)",
+        background: "radial-gradient(ellipse at center, rgba(5,5,5,0.6) 0%, rgba(5,5,5,0.3) 45%, var(--bg) 100%)",
       }} />
 
 
