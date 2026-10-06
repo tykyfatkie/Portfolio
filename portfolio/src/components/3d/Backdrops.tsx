@@ -32,7 +32,7 @@ interface Props {
 const Backdrop = ({ kind, opacity = 0.5, blend = "normal", vignette = true }: Props) => (
   <div className="backdrop" style={{ opacity, mixBlendMode: blend }} aria-hidden>
     <Suspense fallback={null}>
-      {kind === "liquid"  && <Liquid speed={0.7} morph={1.2} mouseAmount={0.35} metal={1.1} camera={6.2} tintHue={125} tintAmount={0.9} />}
+      {kind === "liquid"  && <Liquid speed={0.7} morph={1.2} mouseAmount={0.35} metal={1.1} camera={6.2} tintHue={125} tintAmount={0.55} />}
       {kind === "ribbon"  && <Ribbon speed={0.8} pointerAmount={1.2} brightness={0.9} hue={0} />}
       {kind === "stream"  && <Stream speed={0.8} fidelity={0.5} brightness={0.85} hue={0} />}
       {kind === "dots"    && <Dots speed={0.8} gridScale={46} mouseAmount={0.12} pulseSpeed={0.5} radius={0.18} opacity={0.5} hue={90} />}
