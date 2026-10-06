@@ -1,6 +1,9 @@
-import { useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { gsap } from "gsap";
+const TechGlobe = lazy(() => import("../3d/TechGlobe"));
+import ScrambleText from "../ui/ScrambleText";
+import Backdrop from "../3d/Backdrops";
 
 const SKILL_GROUPS = [
   {
@@ -97,29 +100,34 @@ const MARQUEE_SKILLS = [
 
 const SkillsSection = () => (
   <section id="skills" style={{ background: "var(--bg)", padding: "8rem 0", minHeight: "100vh", overflow: "hidden" }}>
-    <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 2rem" }}>
+    <Backdrop kind="ribbon" opacity={0.55} />
+    <div style={{ maxWidth: 1080, margin: "0 auto", padding: "0 2rem", position: "relative", zIndex: 1 }}>
 
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <motion.div data-fx="up"
         style={{ marginBottom: "5rem" }}
       >
         <p className="section-label">02 / Skills</p>
         <h2 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.5rem, 7vw, 5rem)", lineHeight: .95 }}>
-          TECH <span className="neon-pink">STACK</span>
+          TECH <ScrambleText text="STACK" className="neon-pink" />
         </h2>
+        <span className="title-underline" />
+      </motion.div>
+
+      {/* Quả cầu 3D — kéo để xoay */}
+      <motion.div data-fx="zoom"
+        style={{ marginBottom: "4rem", position: "relative" }}
+      >
+        <Suspense fallback={<div style={{ height: "min(520px, 80vw)" }} />}><TechGlobe /></Suspense>
+        <p style={{ textAlign: "center", fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".2em", color: "var(--muted)", textTransform: "uppercase" }}>
+          ◐ drag to rotate
+        </p>
       </motion.div>
 
       {/* Skill bars grid */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem 4rem", marginBottom: "5rem" }}>
         {SKILL_GROUPS.map((group, gi) => (
-          <motion.div
+          <motion.div data-fx="up"
             key={group.category}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: gi * .1 }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: ".75rem", marginBottom: "1.5rem" }}>
               <div style={{ width: 8, height: 8, borderRadius: "50%", background: group.color, boxShadow: `0 0 12px ${group.color}` }} />
@@ -133,10 +141,7 @@ const SkillsSection = () => (
       </div>
 
       {/* Certs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <motion.div data-fx="up"
         style={{
           background: "var(--glass)",
           border: "0.5px solid var(--glass-border)",
@@ -170,7 +175,7 @@ const SkillsSection = () => (
     </div>
 
     {/* Marquee */}
-    <div style={{ overflow: "hidden", borderTop: "0.5px solid var(--glass-border)", borderBottom: "0.5px solid var(--glass-border)", padding: "1rem 0" }}>
+    <div data-fx="fade" style={{ position: "relative", zIndex: 1, overflow: "hidden", borderTop: "0.5px solid var(--glass-border)", borderBottom: "0.5px solid var(--glass-border)", padding: "1rem 0" }}>
       <div className="marquee-track">
         {[...MARQUEE_SKILLS, ...MARQUEE_SKILLS].map((s, i) => (
           <span
@@ -186,6 +191,11 @@ const SkillsSection = () => (
           >
             {s} /
           </span>
+        ))}
+      </div>
+      <div className="marquee-track reverse" style={{ marginTop: ".5rem" }}>
+        {[...MARQUEE_SKILLS, ...MARQUEE_SKILLS].reverse().map((s, i) => (
+          <span key={i} className="marquee-outline">{s}</span>
         ))}
       </div>
     </div>

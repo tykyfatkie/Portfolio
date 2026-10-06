@@ -24,6 +24,8 @@
 
 import { useRef, useState, useCallback } from "react";
 import { motion } from "motion/react";
+import ScrambleText from "../ui/ScrambleText";
+import Backdrop from "../3d/Backdrops";
 import "../styles/projects.css";
 
 // ─── DATA ────────────────────────────────────────────────────
@@ -141,16 +143,14 @@ const ProjectCard = ({ p, index }: { p: Project; index: number }) => {
     const dx = (e.clientX - r.left  - r.width  / 2) / (r.width  / 2);
     const dy = (e.clientY - r.top   - r.height / 2) / (r.height / 2);
     setTilt({ x: -dy * 7, y: dx * 7 });
+    cardRef.current!.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    cardRef.current!.style.setProperty("--my", `${e.clientY - r.top}px`);
   }, []);
 
   const showImage = p.image && !imgErr;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.7, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
+    <motion.div data-fx="up"
       style={{ perspective: 1200 }}
     >
       <motion.div
@@ -253,12 +253,10 @@ const ProjectCard = ({ p, index }: { p: Project; index: number }) => {
 // ─── SECTION ─────────────────────────────────────────────────
 const ProjectsSection = () => (
   <section id="projects" style={{ background: "var(--bg2)", padding: "8rem 2rem", minHeight: "100vh" }}>
-    <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+    <Backdrop kind="stream" opacity={0.5} />
+    <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <motion.div data-fx="up"
         style={{ marginBottom: "5rem" }}
       >
         <p className="section-label">03 / Work</p>
@@ -267,8 +265,9 @@ const ProjectsSection = () => (
           fontSize: "clamp(2.5rem, 7vw, 5rem)",
           lineHeight: 0.95,
         }}>
-          SELECTED <span className="neon-green">PROJECTS</span>
+          SELECTED <ScrambleText text="PROJECTS" className="neon-green" />
         </h2>
+        <span className="title-underline" />
       </motion.div>
 
       <div style={{

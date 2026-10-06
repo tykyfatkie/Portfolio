@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { motion } from "motion/react";
+const FloatingShapes = lazy(() => import("../3d/FloatingShapes"));
+import ScrambleText from "../ui/ScrambleText";
+import Backdrop from "../3d/Backdrops";
 
 const SOCIALS = [
   { label:"GitHub",   abbr:"GH", url:"https://github.com/tykyfatkie",                color:"#39ff14" },
@@ -14,17 +17,16 @@ const ContactSection = () => {
 
   return (
     <section id="contact" style={{ background:"var(--bg)", padding:"8rem 2rem", minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center" }}>
-      <div style={{ maxWidth:700, width:"100%" }}>
+      <Backdrop kind="horizon" opacity={0.7} />
+      <Suspense fallback={null}><FloatingShapes /></Suspense>
+      <div style={{ maxWidth:700, width:"100%", position:"relative", zIndex:1 }}>
 
-        <motion.div
-          initial={{ opacity:0, y:30 }}
-          whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }}
+        <motion.div data-fx="up"
           style={{ textAlign:"center", marginBottom:"4rem" }}
         >
           <p className="section-label">04 / Contact</p>
           <h2 style={{ fontFamily:"var(--font-display)", fontSize:"clamp(2.5rem,8vw,5.5rem)", lineHeight:.9, letterSpacing:".02em" }}>
-            LET'S <span className="neon-green">BUILD</span>
+            LET'S <ScrambleText text="BUILD" className="neon-green" />
             <br/>TOGETHER
           </h2>
           <p style={{ color:"#666", lineHeight:1.9, fontSize:".92rem", marginTop:"1.5rem", fontWeight:300 }}>
@@ -34,11 +36,7 @@ const ContactSection = () => {
         </motion.div>
 
         {/* Form */}
-        <motion.div
-          initial={{ opacity:0, y:30 }}
-          whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }}
-          transition={{ delay:.15 }}
+        <motion.div data-fx="up"
           style={{
             background:"var(--glass)",
             border:"0.5px solid var(--glass-border)",
@@ -110,11 +108,7 @@ const ContactSection = () => {
         </motion.div>
 
         {/* Socials */}
-        <motion.div
-          initial={{ opacity:0, y:16 }}
-          whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }}
-          transition={{ delay:.3 }}
+        <motion.div data-fx="up"
           style={{ display:"flex", gap:".75rem", justifyContent:"center" }}
         >
           {SOCIALS.map(s => (

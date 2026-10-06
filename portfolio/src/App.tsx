@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";  // ← thêm useState
+import { useCallback, useEffect, useState } from "react";
 import Navbar from "./components/ui/Navbar";
 import HeroSection from "./components/sections/HeroSection";
 import AboutSection from "./components/sections/AboutSection";
@@ -6,6 +6,12 @@ import SkillsSection from "./components/sections/SkillsSection";
 import ProjectsSection from "./components/sections/ProjectsSection";
 import ContactSection from "./components/sections/ContactSection";
 import AudioController from "./components/ui/AudioController";
+import ScrollProgress from "./components/ui/ScrollProgress";
+import Preloader from "./components/ui/Preloader";
+import { DeckProvider, SlideDeck } from "./components/ui/SlideDeck";
+
+const SLIDE_IDS    = ["hero", "about", "skills", "projects", "contact"];
+const SLIDE_LABELS = ["Home", "About", "Skills", "Work", "Contact"];
 import { useCursor } from "./hooks/useCursor";
 import { useBackgroundMusic } from "./hooks/useBackgroundMusic";
 import { bootAudio } from "./hooks/useSound";
@@ -88,7 +94,7 @@ const ClickPrompt = ({ visible }: { visible: boolean }) => (
   </div>
 );
 
-const App = () => {
+const Main = () => {
   useCursor();
   const { toggle, playing } = useBackgroundMusic();
   const [prompted, setPrompted] = useState(true); // hiện ngay khi load
@@ -121,20 +127,37 @@ const App = () => {
   }, [playing, toggle]);
 
   return (
-    <>
+    <DeckProvider ids={SLIDE_IDS} labels={SLIDE_LABELS}>
       <div id="cursor-dot"  className="cursor-dot" />
       <div id="cursor-ring" className="cursor-ring" />
       <div className="noise" />
+      <ScrollProgress />
       <Navbar />
-      <main>
+      <SlideDeck>
         <HeroSection />
         <AboutSection />
         <SkillsSection />
         <ProjectsSection />
-        <ContactSection />
-      </main>
-      <Footer />
-      <ClickPrompt visible={prompted} />  
+        <>
+          <ContactSection />
+          <Footer />
+        </>
+      </SlideDeck>
+      <ClickPrompt visible={prompted} />
+    </DeckProvider>
+  );
+};
+
+const App = () => {
+  const [ready, setReady]   = useState(false); // trang chính đã mount
+  const [loading, setLoading] = useState(true); // màn hình loading còn hiện
+  const onReady = useCallback(() => setReady(true), []);
+  const onDone  = useCallback(() => setLoading(false), []);
+
+  return (
+    <>
+      {ready && <Main />}
+      {loading && <Preloader onReady={onReady} onDone={onDone} />}
     </>
   );
 };

@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { gsap } from "gsap";
-import { WarpFieldBackground } from "@designcodeio/threeui/components/WarpFieldBackground";
+import SplitChars from "../ui/SplitChars";
+import Magnetic from "../ui/Magnetic";
+import Backdrop, { Warp } from "../3d/Backdrops";
 
 const ROLES = ["Software Engineer", "Front-end Developer", "Full-stack Builder", "AI Integrator"];
 
@@ -9,6 +11,27 @@ const HeroSection = () => {
   const roleRef  = useRef<HTMLSpanElement>(null);
   const nameRef  = useRef<HTMLHeadingElement>(null);
   const lineRef  = useRef<HTMLDivElement>(null);
+  const bgRef    = useRef<HTMLDivElement>(null);
+  const blobRef  = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+
+  // Parallax 3 lớp + nghiêng 3D khối chữ theo chuột
+  useEffect(() => {
+    const bg = bgRef.current, blob = blobRef.current, stage = stageRef.current;
+    if (!bg || !blob || !stage) return;
+    const bgX = gsap.quickTo(bg, "x", { duration: 1.2, ease: "power3.out" }), bgY = gsap.quickTo(bg, "y", { duration: 1.2, ease: "power3.out" });
+    const bX = gsap.quickTo(blob, "x", { duration: 0.9, ease: "power3.out" }), bY = gsap.quickTo(blob, "y", { duration: 0.9, ease: "power3.out" });
+    const rX = gsap.quickTo(stage, "rotationX", { duration: 0.8, ease: "power3.out" }), rY = gsap.quickTo(stage, "rotationY", { duration: 0.8, ease: "power3.out" });
+    gsap.set(stage, { transformPerspective: 1000 });
+    const onMove = (e: MouseEvent) => {
+      const nx = e.clientX / window.innerWidth - 0.5, ny = e.clientY / window.innerHeight - 0.5;
+      bgX(-nx * 40); bgY(-ny * 30);
+      bX(nx * 70);   bY(ny * 50);
+      rY(nx * 9);    rX(-ny * 7);
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
 
   // Typewriter role cycling
   useEffect(() => {
@@ -57,16 +80,30 @@ const HeroSection = () => {
         background: "var(--bg)",
       }}
     >
-      {/* Warp field background (ThreeUI) */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <WarpFieldBackground variant="streaks" speed={8} streakOpacity={0.55} brightness={0.9} />
+      {/* Lớp 1: warp field (ThreeUI), trôi ngược chiều chuột */}
+      <div ref={bgRef} style={{ position: "absolute", inset: "-4%", zIndex: 0, pointerEvents: "none" }}>
+        <Suspense fallback={null}><Warp variant="streaks" speed={9} streakOpacity={0.6} brightness={0.95} /></Suspense>
+      </div>
+
+      {/* Lớp 2: sàn lưới phối cảnh chuyển động */}
+      <div className="hero-floor" />
+
+      {/* Lớp 3: khối kim loại lỏng 3D (ThreeUI LiquidForm), trôi theo chuột */}
+      <div ref={blobRef} style={{ position: "absolute", inset: "-3%", zIndex: 1, pointerEvents: "none" }}>
+        <Backdrop kind="liquid" opacity={0.85} blend="screen" vignette={false} />
       </div>
 
       {/* Vignette giữ chữ dễ đọc */}
       <div style={{
-        position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
-        background: "radial-gradient(ellipse at center, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0.2) 45%, var(--bg) 100%)",
+        position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+        background: "radial-gradient(ellipse at center, rgba(5,5,5,0.45) 0%, rgba(5,5,5,0.15) 45%, var(--bg) 100%)",
       }} />
+
+      {/* HUD */}
+      <div className="hud hud--tl" data-fx="fade"><span className="hud__tick" />PORTFOLIO <b>/ 2025</b><br />BUILD <b>v1.0.0</b></div>
+      <div className="hud hud--tr" data-fx="fade">HO CHI MINH CITY<br /><b>10.82°N · 106.63°E</b></div>
+      <div className="hud hud--bl" data-fx="fade">FPT UNIVERSITY<br />SOFTWARE ENGINEERING</div>
+      <div className="hud hud--v" data-fx="fade">REACT · THREE.JS · GSAP · AI</div>
 
       {/* Gradient blobs */}
       <div style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none", overflow: "hidden" }}>
@@ -84,10 +121,10 @@ const HeroSection = () => {
         }} />
       </div>
 
-      <div style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "2rem", maxWidth: 900, width: "100%" }}>
+      <div ref={stageRef} className="hero-stage" style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "2rem", maxWidth: 900, width: "100%" }}>
 
         {/* Eyebrow */}
-        <motion.div
+        <motion.div data-fx="up"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: .6, delay: .1 }}
@@ -110,7 +147,7 @@ const HeroSection = () => {
         </motion.div>
 
         {/* Name */}
-        <h1
+        <h1 data-fx="zoom"
           ref={nameRef}
           style={{
             fontFamily: "var(--font-display)",
@@ -123,9 +160,9 @@ const HeroSection = () => {
         >
           <span className="glitch-wrap" data-text="NGUYEN">NGUYEN</span>
           <br />
-          <span style={{ color: "var(--neon)", textShadow: "0 0 40px rgba(57,255,20,0.4)" }}>TANG TAI</span>
+          <span style={{ color: "var(--neon)", textShadow: "0 0 40px rgba(57,255,20,0.4)" }}><SplitChars text="TANG TAI" delay={0.7} /></span>
           <br />
-          PHAT
+          <SplitChars text="PHAT" delay={1.1} />
         </h1>
 
         {/* Divider line */}
@@ -141,7 +178,7 @@ const HeroSection = () => {
         />
 
         {/* Role typewriter */}
-        <motion.p
+        <motion.p data-fx="up"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: .7 }}
@@ -159,7 +196,7 @@ const HeroSection = () => {
         </motion.p>
 
         {/* Sub */}
-        <motion.p
+        <motion.p data-fx="up"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: .9 }}
@@ -177,13 +214,13 @@ const HeroSection = () => {
         </motion.p>
 
         {/* CTAs */}
-        <motion.div
+        <motion.div data-fx="up"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
           style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}
         >
-          <a
+          <Magnetic><a
             href="#projects"
             style={{
               padding: ".85rem 2.2rem",
@@ -209,8 +246,8 @@ const HeroSection = () => {
             }}
           >
             View Projects
-          </a>
-          <a
+          </a></Magnetic>
+          <Magnetic><a
             href="https://github.com/tykyfatkie"
             target="_blank"
             rel="noopener noreferrer"
@@ -241,7 +278,7 @@ const HeroSection = () => {
             }}
           >
             GitHub ↗
-          </a>
+          </a></Magnetic>
         </motion.div>
 
         {/* Scroll hint */}

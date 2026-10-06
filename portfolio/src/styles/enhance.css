@@ -1,0 +1,428 @@
+/* ============================================================
+   enhance.css — hiệu ứng 3D / animation bổ sung
+   ============================================================ */
+
+@property --ang {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── Scroll progress + cursor spotlight ── */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 300;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--neon), var(--neon3), var(--neon2));
+  box-shadow: 0 0 12px var(--neon), 0 0 24px rgba(0, 207, 255, 0.5);
+  pointer-events: none;
+}
+.cursor-glow {
+  position: fixed;
+  top: 0; left: 0;
+  width: 600px; height: 600px;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(57, 255, 20, 0.045) 0%, rgba(0, 207, 255, 0.02) 35%, transparent 65%);
+  will-change: transform;
+}
+@media (hover: none) { .cursor-glow { display: none; } }
+
+/* ── Tilt card + glare ── */
+.tilt {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+  overflow: hidden;
+}
+.tilt-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.14), transparent 60%);
+  transition: opacity .3s;
+}
+.tilt:hover .tilt-glare { opacity: 1; }
+.stat-card {
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  transition: border-color .3s, background .3s, box-shadow .3s;
+}
+.stat-card:hover {
+  border-color: rgba(57, 255, 20, 0.4);
+  background: rgba(57, 255, 20, 0.05);
+  box-shadow: 0 20px 50px rgba(57, 255, 20, 0.12);
+}
+
+/* ── Project card: viền conic quay + spotlight theo chuột ── */
+.proj-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(from var(--ang), transparent 0 55%, var(--proj-color) 78%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity .4s;
+  animation: spinAng 3.5s linear infinite;
+  pointer-events: none;
+  z-index: 4;
+}
+.proj-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--proj-color) 18%, transparent), transparent 45%);
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+  z-index: 3;
+}
+.proj-card:hover::before,
+.proj-card:hover::after { opacity: 1; }
+@keyframes spinAng { to { --ang: 360deg; } }
+
+/* ── Timeline: đường vẽ dần + dot nhấp nháy ── */
+.timeline-line {
+  transform-origin: top;
+  animation: drawLine 1.6s cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes drawLine { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.timeline-dot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: .6;
+  animation: ping 2s ease-out infinite;
+}
+@keyframes ping { from { transform: scale(.6); opacity: .7; } to { transform: scale(2.2); opacity: 0; } }
+
+/* ── Marquee hàng 2 ngược chiều, chữ outline ── */
+.marquee-track.reverse { animation-direction: reverse; animation-duration: 36s; }
+.marquee-outline {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  letter-spacing: .12em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.18);
+  margin-right: 3rem;
+  white-space: nowrap;
+  transition: color .3s, -webkit-text-stroke-color .3s;
+}
+.marquee-outline:hover { color: var(--neon); -webkit-text-stroke-color: var(--neon); }
+
+/* ── Tiêu đề section: gạch chân sáng ── */
+.title-underline {
+  display: block;
+  height: 2px;
+  width: 96px;
+  margin-top: 1.25rem;
+  background: linear-gradient(90deg, var(--neon), var(--neon3), transparent);
+  box-shadow: 0 0 14px var(--neon);
+}
+
+/* ── Hero: lưới phối cảnh sàn ── */
+.hero-floor {
+  position: absolute;
+  left: -50%; right: -50%; bottom: -10%;
+  height: 55%;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(57, 255, 20, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.22) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(500px) rotateX(68deg);
+  transform-origin: center bottom;
+  mask-image: linear-gradient(to top, #000 0%, transparent 85%);
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 85%);
+  animation: floorMove 2.4s linear infinite;
+}
+@keyframes floorMove { to { background-position: 0 60px, 0 0; } }
+
+
+/* ============================================================
+   SLIDE DECK
+   ============================================================ */
+html, body { height: 100%; overflow: hidden; }
+
+.deck {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  perspective: 1400px;
+  perspective-origin: 50% 50%;
+  background: var(--bg);
+}
+.slide {
+  position: absolute;
+  inset: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  will-change: transform, opacity;
+  transform-origin: 50% 50%;
+  visibility: hidden;            /* gsap bật lại cho slide đang hiện */
+  background: var(--bg);
+}
+.slide > section { min-height: 100%; }
+.cursor-glow { z-index: 5; }
+
+/* Dải sáng quét khi chuyển slide */
+.deck-wipe {
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  height: 100vh;
+  z-index: 150;
+  pointer-events: none;
+  visibility: hidden;
+  mix-blend-mode: screen;
+  background: linear-gradient(to bottom,
+    #fff 0, var(--neon) 3px, rgba(57, 255, 20, .45) 6px,
+    rgba(0, 207, 255, .16) 12%, rgba(255, 45, 120, .06) 38%, transparent 65%);
+  filter: drop-shadow(0 0 18px var(--neon));
+}
+
+/* Dot điều hướng bên phải */
+.deck-dots {
+  position: fixed;
+  right: 1.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 190;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  align-items: flex-end;
+}
+.deck-dot {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: none;
+  border: 0;
+  padding: .2rem 0;
+  cursor: none;
+  color: var(--muted);
+}
+.deck-dot__label {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity .3s, transform .3s, color .3s;
+}
+.deck-dot:hover .deck-dot__label,
+.deck-dot.active .deck-dot__label { opacity: 1; transform: none; }
+.deck-dot.active .deck-dot__label { color: var(--neon); }
+.deck-dot__pip {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  transition: all .4s cubic-bezier(.16, 1, .3, 1);
+}
+.deck-dot:hover .deck-dot__pip { color: var(--neon2); transform: scale(1.4); }
+.deck-dot.active .deck-dot__pip {
+  height: 26px;
+  border-radius: 6px;
+  background: var(--neon);
+  border-color: var(--neon);
+  box-shadow: 0 0 14px var(--neon);
+}
+
+/* Bộ đếm slide góc dưới trái */
+.deck-counter {
+  position: fixed;
+  left: 2.5rem;
+  bottom: 2rem;
+  z-index: 190;
+  pointer-events: none;
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  font-family: var(--font-display);
+  overflow: hidden;
+}
+.deck-counter__num {
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--neon);
+  text-shadow: 0 0 20px rgba(57, 255, 20, .5);
+  animation: counterIn .8s cubic-bezier(.16, 1, .3, 1) both;
+}
+.deck-counter__total { font-size: 1.1rem; color: var(--muted); letter-spacing: .1em; }
+.deck-counter__label {
+  margin-left: .6rem;
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@keyframes counterIn { from { transform: translateY(100%); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.scroll-progress { transition: transform .9s cubic-bezier(.16, 1, .3, 1); }
+
+@media (max-width: 720px) {
+  .deck-dots { right: .8rem; gap: .8rem; }
+  .deck-dot__label { display: none; }
+  .deck-counter { left: 1rem; bottom: 1rem; }
+  .deck-counter__num { font-size: 2rem; }
+  .deck-counter__label { display: none; }
+}
+
+/* ============================================================
+   PRELOADER
+   ============================================================ */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: none;
+}
+.preloader__half {
+  position: absolute;
+  left: 0; right: 0;
+  height: 50.5%;
+  background: var(--bg);
+}
+.preloader__half--top { top: 0;    border-bottom: 1px solid rgba(57, 255, 20, .5); box-shadow: 0 1px 24px rgba(57, 255, 20, .35); }
+.preloader__half--bot { bottom: 0; }
+.preloader__body {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 80vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  text-align: center;
+}
+.preloader__brand {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  letter-spacing: .25em;
+  color: var(--neon);
+  text-shadow: 0 0 18px rgba(57, 255, 20, .5);
+}
+.preloader__num {
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 18vw, 9rem);
+  line-height: .9;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.preloader__num small { font-size: .35em; color: var(--neon); margin-left: .15em; }
+.preloader__bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, .08);
+  overflow: hidden;
+}
+.preloader__bar span {
+  display: block;
+  height: 100%;
+  transform-origin: left;
+  background: linear-gradient(90deg, var(--neon), var(--neon3), var(--neon2));
+  box-shadow: 0 0 12px var(--neon);
+}
+.preloader__label {
+  font-family: var(--font-mono);
+  font-size: .65rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.preloader__label b { color: var(--neon3); font-weight: 400; }
+
+/* Khối lập phương 3D xoay */
+.preloader__cube {
+  --s: 56px;
+  position: relative;
+  width: var(--s); height: var(--s);
+  margin-bottom: .8rem;
+  transform-style: preserve-3d;
+  animation: cubeSpin 5s linear infinite;
+}
+.preloader__cube i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--neon);
+  background: rgba(57, 255, 20, .04);
+  box-shadow: 0 0 14px rgba(57, 255, 20, .35) inset;
+}
+.preloader__cube i:nth-child(1) { transform: rotateY(0)     translateZ(calc(var(--s) / 2)); }
+.preloader__cube i:nth-child(2) { transform: rotateY(90deg)  translateZ(calc(var(--s) / 2)); border-color: var(--neon3); }
+.preloader__cube i:nth-child(3) { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.preloader__cube i:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); border-color: var(--neon3); }
+.preloader__cube i:nth-child(5) { transform: rotateX(90deg)  translateZ(calc(var(--s) / 2)); border-color: var(--neon2); }
+.preloader__cube i:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); border-color: var(--neon2); }
+@keyframes cubeSpin { from { transform: rotateX(-25deg) rotateY(0); } to { transform: rotateX(-25deg) rotateY(360deg); } }
+.preloader__body { perspective: 600px; }
+.preloader__cube { margin-bottom: 1.4rem; }
+
+
+/* Nền động ThreeUI cho từng slide */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.backdrop .threeui-background { background: transparent; }
+.backdrop__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgba(5, 5, 5, .15) 0%, rgba(5, 5, 5, .55) 55%, var(--bg) 100%);
+}
+.slide > section > .rel,
+.layer-content { position: relative; z-index: 1; }
+
+/* Overlay hyperspace khi chuyển slide */
+.deck-jump {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+.deck-jump .threeui-background { background: #000; }
+
+/* Hero HUD + giáp 3D */
+.hero-stage { transform-style: preserve-3d; will-change: transform; }
+.hud {
+  position: absolute;
+  z-index: 11;
+  font-family: var(--font-mono);
+  font-size: .6rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  pointer-events: none;
+}
+.hud b { color: var(--neon); font-weight: 400; }
+.hud--tl { top: 6rem; left: 2.5rem; }
+.hud--tr { top: 6rem; right: 4.5rem; text-align: right; }
+.hud--bl { bottom: 6.5rem; left: 2.5rem; }
+.hud--v  { left: 1.2rem; top: 50%; writing-mode: vertical-rl; transform: rotate(180deg) translateY(50%); }
+.hud__tick { display: inline-block; width: 26px; height: 1px; background: var(--neon); vertical-align: middle; margin-right: .6rem; }
+@media (max-width: 900px) { .hud { display: none; } }

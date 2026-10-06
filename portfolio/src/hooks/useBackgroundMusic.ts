@@ -1,3 +1,4 @@
+import { assets } from "../lib/preload";
 import { useRef, useState, useCallback } from "react";
 
 export function useBackgroundMusic() {
@@ -6,7 +7,7 @@ export function useBackgroundMusic() {
 
   const toggle = useCallback(() => {
     if (!audioRef.current) {
-      audioRef.current = new Audio("/theme.mp3");
+      audioRef.current = new Audio(assets.music);
       audioRef.current.loop = true;
     }
 

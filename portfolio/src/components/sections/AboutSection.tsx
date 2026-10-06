@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { gsap } from "gsap";
+import Tilt from "../ui/Tilt";
+import ScrambleText from "../ui/ScrambleText";
+import Backdrop from "../3d/Backdrops";
 
 const STATS = [
   { value: "3+",   label: "Years Learning",    icon: "📅" },
@@ -51,13 +54,11 @@ const CountUp = ({ target, suffix = "" }: { target: string; suffix?: string }) =
 const AboutSection = () => {
   return (
     <section id="about" style={{ background: "var(--bg2)", padding: "8rem 2rem", minHeight: "100vh" }}>
-      <div style={{ maxWidth: 1080, margin: "0 auto" }}>
+      <Backdrop kind="dots" opacity={0.75} />
+      <div style={{ maxWidth: 1080, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+        <motion.div data-fx="up"
           style={{ marginBottom: "5rem" }}
         >
           <p className="section-label">01 / About</p>
@@ -67,18 +68,15 @@ const AboutSection = () => {
             lineHeight: .95,
             letterSpacing: ".02em",
           }}>
-            WHO I <span className="neon-green">AM</span>
+            WHO I <ScrambleText text="AM" className="neon-green" />
           </h2>
+          <span className="title-underline" />
         </motion.div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start" }}>
 
           {/* Left – Bio */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: .8 }}
+          <motion.div data-fx="left"
           >
             <p style={{ color: "#888", lineHeight: 1.95, fontSize: ".95rem", fontWeight: 300, marginBottom: "1.5rem" }}>
               I'm <strong style={{ color: "var(--text)", fontWeight: 500 }}>Nguyễn Tăng Tài Phát</strong> — an adaptable software engineering student based in 
@@ -111,39 +109,18 @@ const AboutSection = () => {
 
           {/* Right – Stats + Timeline */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: .8 }}
           >
             {/* Stats grid */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "3rem" }}>
               {STATS.map((s, i) => (
-                <motion.div
+                <motion.div data-fx="zoom"
                   key={s.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * .1 }}
-                  style={{
-                    background: "var(--glass)",
-                    border: "0.5px solid var(--glass-border)",
-                    borderRadius: 8,
-                    padding: "1.25rem",
-                    transition: "all .3s",
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(57,255,20,0.3)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(57,255,20,0.04)";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "var(--glass-border)";
-                    (e.currentTarget as HTMLElement).style.background = "var(--glass)";
-                  }}
                 >
-                  <div style={{ fontSize: "1.5rem", marginBottom: ".3rem" }}>{s.icon}</div>
-                  <div className="count-num"><CountUp target={s.value} /></div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", color: "var(--muted)", textTransform: "uppercase", letterSpacing: ".08em", marginTop: ".25rem" }}>{s.label}</div>
+                  <Tilt className="stat-card" max={16}>
+                    <div style={{ fontSize: "1.5rem", marginBottom: ".3rem", transform: "translateZ(30px)" }}>{s.icon}</div>
+                    <div className="count-num"><CountUp target={s.value} /></div>
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", color: "var(--muted)", textTransform: "uppercase", letterSpacing: ".08em", marginTop: ".25rem" }}>{s.label}</div>
+                  </Tilt>
                 </motion.div>
               ))}
             </div>
@@ -152,15 +129,11 @@ const AboutSection = () => {
             <div style={{ position: "relative", paddingLeft: "1.5rem" }}>
               <div className="timeline-line" />
               {TIMELINE.map((item, i) => (
-                <motion.div
+                <motion.div data-fx="right"
                   key={item.title}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: .15 + i * .15 }}
                   style={{ marginBottom: "2rem", position: "relative" }}
                 >
-                  <div className="timeline-dot" style={{ background: item.color, boxShadow: `0 0 12px ${item.color}` }} />
+                  <div className="timeline-dot" style={{ background: item.color, color: item.color, boxShadow: `0 0 12px ${item.color}` }} />
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".63rem", color: item.color, letterSpacing: ".1em", marginBottom: ".3rem" }}>{item.period}</div>
                   <div style={{ fontWeight: 500, fontSize: ".95rem", color: "var(--text)", marginBottom: ".2rem" }}>{item.title}</div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".72rem", color: "var(--muted)", marginBottom: ".5rem" }}>{item.org}</div>

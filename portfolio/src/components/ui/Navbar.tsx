@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { useDeck } from "./SlideDeck";
 
 const NAV = [
   { label: "About",    href: "#about" },
@@ -9,21 +9,9 @@ const NAV = [
 ];
 
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [active, setActive]     = useState("");
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 40);
-      const sections = ["about","skills","projects","contact"];
-      for (const id of [...sections].reverse()) {
-        const el = document.getElementById(id);
-        if (el && window.scrollY >= el.offsetTop - 120) { setActive(id); break; }
-      }
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  const { index, ids } = useDeck();
+  const scrolled = index > 0;
+  const active   = index > 0 ? ids[index] : "";
 
   return (
     <motion.nav
