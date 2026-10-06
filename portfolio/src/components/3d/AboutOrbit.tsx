@@ -11,7 +11,7 @@ const AboutOrbit = () => {
 
     const scene  = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 60);
-    camera.position.z = 10;
+    camera.position.z = 13;
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
@@ -25,9 +25,9 @@ const AboutOrbit = () => {
 
     // Ba vòng quỹ đạo nghiêng khác nhau, mỗi vòng có một vệ tinh
     const specs = [
-      { r: 3.6, color: 0x39ff14, tilt: [1.2, 0.2], speed: 0.35 },
-      { r: 4.3, color: 0x00cfff, tilt: [0.5, 0.9], speed: -0.25 },
-      { r: 5.0, color: 0xff2d78, tilt: [-0.7, 0.4], speed: 0.18 },
+      { r: 2.9, color: 0x39ff14, tilt: [1.2, 0.2], speed: 0.35 },
+      { r: 3.4, color: 0x00cfff, tilt: [0.5, 0.9], speed: -0.25 },
+      { r: 3.9, color: 0xff2d78, tilt: [-0.7, 0.4], speed: 0.18 },
     ];
     const rings: { g: THREE.Group; sat: THREE.Mesh; speed: number; r: number }[] = [];
     specs.forEach(sp => {
@@ -55,7 +55,7 @@ const AboutOrbit = () => {
     // Vỏ hạt: các điểm sáng phân bố trên mặt cầu lớn → cảm giác không gian
     const N = 500, pos = new Float32Array(N * 3);
     for (let i = 0; i < N; i++) {
-      const r = 5.5 + Math.random() * 2.5, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
+      const r = 2.6 + Math.random() * 1.3, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
       pos[i * 3] = r * Math.sin(ph) * Math.cos(th);
       pos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
       pos[i * 3 + 2] = r * Math.cos(ph);

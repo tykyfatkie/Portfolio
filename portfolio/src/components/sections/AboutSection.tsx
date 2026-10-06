@@ -69,7 +69,7 @@ const strong: CSSProperties = { color: "var(--text)", fontWeight: 500 };
 
 const AboutSection = () => (
   <section id="about" style={{ background: "var(--bg2)", padding: "8rem 2rem 6rem", minHeight: "100vh" }}>
-    <Backdrop kind="dots" opacity={0.75} />
+    <Backdrop kind="dots" opacity={0.45} />
 
     <div className="about-wrap">
 

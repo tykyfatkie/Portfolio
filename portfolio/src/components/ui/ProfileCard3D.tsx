@@ -6,11 +6,11 @@ const AboutOrbit = lazy(() => import("../3d/AboutOrbit"));
 /** Chip kỹ năng lơ lửng ở các độ sâu khác nhau (z càng lớn càng nổi gần người xem). */
 const CHIPS = [
   { t: "NestJS",     c: "#ff2d78", left: "-14%", top: "10%",  z: 190, d: 0 },
-  { t: "PHP",        c: "#00cfff", left: "78%",  top: "4%",   z: 150, d: 0.8 },
+  { t: "PHP",        c: "#00cfff", left: "78%",  top: "-6%",   z: 150, d: 0.8 },
   { t: "MariaDB",    c: "#ffd700", left: "86%",  top: "40%",  z: 210, d: 1.6 },
   { t: "Flutter",    c: "#39ff14", left: "-18%", top: "52%",  z: 160, d: 2.2 },
   { t: "React",      c: "#00cfff", left: "74%",  top: "80%",  z: 180, d: 1.1 },
-  { t: "TypeScript", c: "#a855f7", left: "-6%",  top: "88%",  z: 140, d: 0.4 },
+  { t: "TypeScript", c: "#a855f7", left: "-26%", top: "76%",  z: 140, d: 0.4 },
 ];
 
 /** Thẻ hồ sơ 3D: nghiêng theo chuột, nhiều lớp tách độ sâu bằng translateZ. */
