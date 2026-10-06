@@ -71,6 +71,7 @@ const tasks: Task[] = [
         ])),
         () => import("../components/3d/TechGlobe"),
         () => import("../components/3d/FloatingShapes"),
+        () => import("../components/3d/AboutOrbit"),
       ];
       let done = 0;
       await Promise.all(loaders.map(l => l().catch(() => null).then(() => report(++done / loaders.length))));
