@@ -64,7 +64,7 @@ const AudioWave = () => {
       peakKick = Math.max(kick, peakKick * 0.9985, 0.1);
       const nk = kick / peakKick;
       avgKick += (nk - avgKick) * 0.12;
-      if (an && nk > 0.5 && nk - avgKick > 0.07 && nowMs - lastHit > 130) { level.flash = 1; lastHit = nowMs; }
+      if (an && nk > 0.5 && nk - avgKick > 0.12 && nowMs - lastHit > 130) { level.flash = 1; lastHit = nowMs; }
       else level.flash *= 0.86;
       if (level.flash < 0.01) level.flash = 0;
       root.style.setProperty("--flash", level.flash.toFixed(3));
