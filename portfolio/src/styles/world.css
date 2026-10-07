@@ -1,0 +1,10 @@
+/* ============================================================
+   WORLD — thế giới 3D dùng chung nằm sau các slide
+   ============================================================ */
+.world { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.world canvas { display: block; }
+
+/* Slide (trừ hero) và deck trong suốt để thế giới 3D lộ ra phía sau nội dung */
+.deck { background: transparent; }
+.slide { background: transparent; }
+.slide > section:not(#hero) { background: transparent !important; }
