@@ -1,5 +1,9 @@
 import { lazy, Suspense, type CSSProperties } from "react";
 import { useBeat } from "../../lib/beat";
+import { useSettled } from "../../lib/settled";
+
+/** Độ trễ dựng (ms) sau khi loading xong, so le giữa các nền để không dồn việc nặng vào một lúc. Khối kim loại lỏng ở hero dựng ngay. */
+const DELAY: Record<string, number> = { liquid: 0, dots: 500, ribbon: 900, stream: 1300, horizon: 1700 };
 
 /**
  * Nền động của từng slide, dùng các component canvas của ThreeUI Community.
@@ -32,14 +36,17 @@ interface Props {
 
 const Backdrop = ({ kind, opacity = 0.5, blend = "normal", vignette = true }: Props) => {
   const b = useBeat();   // 0..1 theo bass của nhạc
+  const settled = useSettled(DELAY[kind]);
+  const live = kind === "liquid" || settled;
   return (
+
   <div className="backdrop" style={{ opacity, mixBlendMode: blend }} aria-hidden>
     <Suspense fallback={null}>
-      {kind === "liquid"  && <Liquid speed={0.7 + b * 1.6} morph={1.2 + b * 1.4} mouseAmount={0.35} metal={1.1} camera={6.2} tintHue={125} tintAmount={0.55} />}
-      {kind === "ribbon"  && <Ribbon speed={0.8 + b * 2.4} pointerAmount={1.2} brightness={0.9 + b * 0.5} hue={0} />}
-      {kind === "stream"  && <Stream speed={0.8 + b * 2.2} fidelity={0.5} brightness={0.85 + b * 0.5} hue={0} />}
-      {kind === "dots"    && <Dots speed={0.8 + b * 1.5} gridScale={54} mouseAmount={0.12} pulseSpeed={0.5 + b * 2.5} radius={0.1 + b * 0.08} opacity={0.4 + b * 0.25} hue={90} />}
-      {kind === "horizon" && <Horizon speed={0.8 + b * 1.8} glow={1.1 + b * 1.4} vignette={1.2} hue={0} />}
+      {live && kind === "liquid"  && <Liquid speed={0.7} morph={1.2} mouseAmount={0.35} metal={1.1} camera={6.2} tintHue={125} tintAmount={0.55} />}
+      {live && kind === "ribbon"  && <Ribbon speed={0.8} pointerAmount={1.2} brightness={0.9 + b * 0.5} hue={0} />}
+      {live && kind === "stream"  && <Stream speed={0.8} fidelity={0.5} brightness={0.85 + b * 0.5} hue={0} />}
+      {live && kind === "dots"    && <Dots speed={0.8} gridScale={54} mouseAmount={0.12} pulseSpeed={0.5} radius={0.1 + b * 0.08} opacity={0.4 + b * 0.25} hue={90} />}
+      {live && kind === "horizon" && <Horizon speed={0.8} glow={1.1 + b * 1.4} vignette={1.2} hue={0} />}
     </Suspense>
     {vignette && <div className="backdrop__vignette" />}
   </div>
