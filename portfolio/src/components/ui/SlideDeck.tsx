@@ -85,8 +85,11 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     inItems.forEach(el => gsap.set(el, fxFrom(el)));
     gsap.set(inKids, { y: dir * 48, scale: 0.985, transformOrigin: "50% 40%" });
 
-    const D = 0.95;      // thời gian slide mới hiện ra
-    const T = 0.18;      // độ trễ so với lúc slide cũ bắt đầu mờ
+    // Hero có nền đặc che kín thế giới 3D: nếu hiện nhanh thì cú bay của camera bị cắt ngang → nhìn rất gắt.
+    // Khi quay về hero thì cho hero hiện chậm, đều, đuổi kịp lúc camera về tới trạm đầu (~1.5s).
+    const toHero = ids[next] === "hero";
+    const D = toHero ? 1.35 : 0.95;   // thời gian slide mới hiện ra
+    const T = toHero ? 0.25 : 0.18;   // độ trễ so với lúc slide cũ bắt đầu mờ
     ctx.current.add(() => {
       const tl = gsap.timeline({
         onComplete: () => {
@@ -100,7 +103,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
       tl.to(out, { opacity: 0, y: -dir * 40, scale: 0.98, duration: 0.6, ease: "power2.inOut" }, 0);
 
       // 2) Slide mới: hiện dần, nội dung trôi vào đúng chỗ
-      tl.to(inn, { opacity: 1, duration: D * 0.8, ease: "power1.out", clearProps: "opacity" }, T);
+      tl.to(inn, { opacity: 1, duration: D * 0.8, ease: toHero ? "sine.inOut" : "power1.out", clearProps: "opacity" }, T);
       tl.to(inKids, { y: 0, scale: 1, duration: D + 0.2, ease: "power3.out", clearProps: "transform,transformOrigin" }, T);
 
       // 3) Từng khối nội dung bay vào lần lượt
