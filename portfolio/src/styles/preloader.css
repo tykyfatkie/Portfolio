@@ -16,6 +16,7 @@
     radial-gradient(ellipse at 50% 40%, rgba(57, 255, 20, .07), transparent 60%),
     var(--bg);
 }
+.preloader__half { will-change: transform; }
 .preloader__half--top { top: 0;    border-bottom: 1px solid rgba(57, 255, 20, .55); box-shadow: 0 1px 28px rgba(57, 255, 20, .4); }
 .preloader__half--bot { bottom: 0; }
 /* lưới mờ nền */
