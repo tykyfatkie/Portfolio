@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { level } from "../../lib/music";
+import { lineFlasher } from "../../lib/flash";
 
 /**
  * Cảnh 3D của hero: các khối viền neon (có lõi đặc tối để che khuất nhau) trôi ở nhiều độ sâu quanh khối chữ,
@@ -81,6 +82,7 @@ const HeroShapes = () => {
       rings.push({ m, z });
     }
 
+    const flashLines = lineFlasher(scene, { whiten: 0.6 });   // cạnh khối + vòng hầm chớp sáng theo nhịp bass
     const mouse = { x: 0, y: 0 }, smooth = { x: 0, y: 0 };
     const onMove = (e: MouseEvent) => {
       mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -133,6 +135,7 @@ const HeroShapes = () => {
         r.m.scale.setScalar(1 + pulse * 0.06);
       });
 
+      flashLines(level.flash);
       renderer.render(scene, camera);
     };
     animate();

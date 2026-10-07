@@ -19,7 +19,7 @@ const AudioWave = () => {
     const cur = new Array(BARS).fill(REST);
     const data = new Uint8Array(32);
     const root = document.documentElement;
-    let raf = 0;
+    let raf = 0, avgBass = 0, lastHit = 0;
 
     const paint = () => bars.current.forEach((el, i) => { if (el) el.style.transform = `scaleY(${cur[i]})`; });
 
@@ -27,6 +27,8 @@ const AudioWave = () => {
       cur.fill(REST);
       paint();
       root.style.setProperty("--beat", "0");
+      root.style.setProperty("--flash", "0");
+      level.flash = 0;
       pushBeat(0);
       return;
     }
@@ -55,6 +57,13 @@ const AudioWave = () => {
         level.bass = 0.3 + 0.3 * Math.abs(Math.sin(t * 2.2));
         level.value = level.bass * 0.7;
       }
+      // Nhịp bass: bass vọt lên rõ so với mức trung bình gần đây → chớp sáng, rồi tắt dần (~0.2 s)
+      const nowMs = performance.now();
+      avgBass += (level.bass - avgBass) * 0.06;
+      if (an && level.bass > 0.3 && level.bass > avgBass + 0.1 && nowMs - lastHit > 140) { level.flash = 1; lastHit = nowMs; }
+      else level.flash *= 0.86;
+      if (level.flash < 0.01) level.flash = 0;
+      root.style.setProperty("--flash", level.flash.toFixed(3));
       root.style.setProperty("--beat", level.bass.toFixed(3));
       pushBeat(level.bass);
       raf = requestAnimationFrame(tick);

@@ -5,7 +5,7 @@ import { getAudioContext } from "../hooks/useSound";
  * Nhạc nền dùng chung toàn app (một HTMLAudioElement duy nhất) + AnalyserNode để các hiệu ứng phản ứng theo nhạc.
  * `level` được AudioWave cập nhật mỗi frame khi nhạc đang phát; các cảnh 3D chỉ cần đọc.
  */
-export const level = { bass: 0, value: 0 };
+export const level = { bass: 0, value: 0, flash: 0 };
 
 let audio: HTMLAudioElement | null = null;
 let analyser: AnalyserNode | null = null;

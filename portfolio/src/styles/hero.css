@@ -26,8 +26,8 @@
   width: var(--d); height: var(--d);
   margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
   border-radius: 50%;
-  border: 1px solid rgba(57, 255, 20, .38);
-  box-shadow: 0 0 calc(18px + var(--beat, 0) * 40px) rgba(57, 255, 20, .28), inset 0 0 22px rgba(57, 255, 20, .10);
+  border: 1px solid rgba(57, 255, 20, calc(.38 + var(--flash, 0) * .5));
+  box-shadow: 0 0 calc(18px + var(--beat, 0) * 40px + var(--flash, 0) * 26px) rgba(57, 255, 20, calc(.28 + var(--flash, 0) * .3)), inset 0 0 22px rgba(57, 255, 20, .10);
   transform-style: preserve-3d;
   pointer-events: none;
   animation: ringSpinA 24s linear infinite;
@@ -44,7 +44,7 @@
 }
 .hero-ring--b {
   --d: min(860px, 78vw);
-  border-color: rgba(0, 207, 255, .40);
+  border-color: rgba(0, 207, 255, calc(.40 + var(--flash, 0) * .5));
   box-shadow: 0 0 calc(18px + var(--beat, 0) * 40px) rgba(0, 207, 255, .28), inset 0 0 22px rgba(0, 207, 255, .10);
   animation: ringSpinB 17s linear infinite reverse;
 }
@@ -53,7 +53,7 @@
 @keyframes ringSpinB { from { transform: rotateX(62deg) rotateY(26deg) rotateZ(0deg); } to { transform: rotateX(62deg) rotateY(26deg) rotateZ(360deg); } }
 
 /* Sàn lưới sáng lên theo bass */
-.hero-floor { filter: brightness(calc(1 + var(--beat, 0) * 1.4)); }
+.hero-floor { filter: brightness(calc(1 + var(--beat, 0) * 1.4 + var(--flash, 0) * .9)); }
 
 /* Sóng âm trên thanh menu: to, nhiều thanh, đổi màu dải neon, phát sáng khi nhạc chạy */
 .audio-wave {

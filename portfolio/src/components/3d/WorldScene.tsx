@@ -123,6 +123,7 @@ const WorldScene = () => {
     window.addEventListener("resize", resize);
     resize();
 
+    const baseCols = COLORS.map(c => new THREE.Color(c)), WHITE = new THREE.Color(1, 1, 1);
     let raf = 0, last = performance.now(), pulse = 0;
     const animate = () => {
       raf = requestAnimationFrame(animate);
@@ -140,7 +141,10 @@ const WorldScene = () => {
 
       rings.forEach((r, i) => { r.rotation.z += dt * 0.08 * (i % 2 ? 1 : -1); r.scale.setScalar(1 + pulse * 0.08); });
       spinners.forEach(({ m, v }) => { m.rotation.x += v.x * dt; m.rotation.y += v.y * dt; m.scale.setScalar(1 + pulse * 0.1); });
-      mats.forEach(m => { m.opacity = 0.3 + pulse * 0.25; });
+      // Chớp sáng theo nhịp bass: đường nét sáng vọt lên rồi tắt dần, màu ngả về trắng
+      const f = level.flash;
+      mats.forEach((m, i) => { m.opacity = 0.3 + pulse * 0.25 + f * 0.3; m.color.copy(baseCols[i]).lerp(WHITE, f * 0.5); });
+      lineMats.forEach((m, i) => { m.opacity = 0.36 + f * 0.55; m.color.copy(baseCols[i]).lerp(WHITE, f * 0.6); });
 
       renderer.render(scene, camera);
     };
