@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import Defer from "./Defer";
 
 const AboutOrbit = lazy(() => import("../3d/AboutOrbit"));
 
@@ -43,7 +44,7 @@ const ProfileCard3D = () => {
   return (
     <div ref={stageRef} className="pc">
       <div className="pc__orbit">
-        <Suspense fallback={null}><AboutOrbit /></Suspense>
+        <Defer ms={1400}><Suspense fallback={null}><AboutOrbit /></Suspense></Defer>
       </div>
 
       <div className="pc__float">
