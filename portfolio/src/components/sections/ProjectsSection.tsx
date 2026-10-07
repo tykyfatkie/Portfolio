@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import ScrambleText from "../ui/ScrambleText";
 import Backdrop from "../3d/Backdrops";
 import ProjectDetail from "../ui/ProjectDetail";
+import ProjectMedia from "../ui/ProjectMedia";
 import { useDeck } from "../ui/SlideDeck";
 import { PROJECTS, type Project } from "../../data/projects";
 import { playTick } from "../../hooks/useSound";
@@ -13,9 +14,7 @@ const TURN = 38;     // góc xoay mỗi bậc (độ)
 /** Một thẻ trong băng chuyền 3D. Thẻ ở giữa nghiêng theo chuột; bấm thẻ bên cạnh để chuyển, bấm thẻ giữa để mở chi tiết. */
 const Card = ({ p, offset, onPick }: { p: Project; offset: number; onPick: (el: HTMLElement) => void }) => {
   const inRef = useRef<HTMLDivElement>(null);
-  const [imgOk, setImgOk] = useState(true);
   const abs = Math.abs(offset);
-  const showImg = p.image && imgOk;
 
   const onMove = (e: React.MouseEvent) => {
     if (offset !== 0) return;
@@ -48,9 +47,7 @@ const Card = ({ p, offset, onPick }: { p: Project; offset: number; onPick: (el: 
       onClick={e => onPick(e.currentTarget)} data-hover>
       <div ref={inRef} className="pj-card__in">
         <div className="pj-card__media">
-          {showImg
-            ? <img src={p.image} alt={`${p.title} screenshot`} draggable={false} onError={() => setImgOk(false)} />
-            : <div className="pj-ph"><span>{p.number}</span></div>}
+          <ProjectMedia project={p} placeholder="pj-ph" />
           <span className="pj-card__shade" />
           <span className="pj-card__team">TEAM {p.teamSize}</span>
         </div>

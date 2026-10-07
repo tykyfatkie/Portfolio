@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import ProjectMedia from "./ProjectMedia";
 import type { Project } from "../../data/projects";
 
 /** Mô hình thiết bị 3D bằng CSS (laptop cho web, điện thoại cho app), xoay theo chuột, màn hình chứa ảnh dự án. */
 const DeviceMockup = ({ project }: { project: Project }) => {
   const stage = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
-  const [imgOk, setImgOk] = useState(true);
   const phone = project.device === "phone";
-
-  useEffect(() => { setImgOk(true); }, [project.id]);
 
   useEffect(() => {
     const st = stage.current, sc = scene.current;
@@ -30,9 +28,7 @@ const DeviceMockup = ({ project }: { project: Project }) => {
     return () => { st.removeEventListener("pointermove", move); st.removeEventListener("pointerleave", leave); };
   }, [phone, project.id]);
 
-  const screen = project.image && imgOk
-    ? <img src={project.image} alt={`${project.title} screenshot`} draggable={false} onError={() => setImgOk(false)} />
-    : <div className="dm-ph"><span>{project.number}</span></div>;
+  const screen = <ProjectMedia project={project} placeholder="dm-ph" />;
 
   return (
     <div ref={stage} className="dm" data-cursor="TILT">
