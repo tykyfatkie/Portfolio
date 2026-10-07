@@ -84,6 +84,8 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     gsap.set(inn, {
       autoAlpha: 1, opacity: 1, yPercent: 0, scale: 1, zIndex: 2,
       clipPath: dir > 0 ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
+      // slide trong suốt nên cần lớp tối mờ che nội dung slide cũ trong lúc chuyển, rồi tan dần để lộ thế giới 3D phía sau
+      backgroundColor: "rgba(5,5,5,.62)", backdropFilter: "blur(10px)",
     });
     gsap.set(out, { zIndex: 1 });
     inItems.forEach(el => gsap.set(el, fxFrom(el)));
@@ -110,6 +112,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
 
       // 3) Slide mới được vén ra, nội dung từ xa lao vào đúng chỗ (parallax so với mép vén)
       tl.to(inn, { clipPath: "inset(0% 0% 0% 0%)", duration: D, ease: "power3.inOut", clearProps: "clipPath" }, T);
+      tl.to(inn, { backgroundColor: "rgba(5,5,5,0)", duration: 0.9, ease: "power1.inOut", clearProps: "backgroundColor,backdropFilter" }, T + D * 0.5);
       tl.to(inKids, { y: 0, scale: 1, duration: D + 0.3, ease: "power3.out", clearProps: "transform,transformOrigin" }, T);
 
       // 3b) Xung lệch màu RGB: tách kênh đỏ/xanh rồi gộp lại, bật filter chỉ trong lúc chuyển
