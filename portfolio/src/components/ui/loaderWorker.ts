@@ -48,7 +48,9 @@ let w = 0, h = 0, cx = 0, cy = 0, psize = 2.4, N = 0;
 let X = new Float32Array(0), Y = X, TX = X, TY = X, ANG = X, RAD = X, SPD = X, DELAY = X, VX = X, VY = X, SEED = X;
 let SX = X, SY = X, MX = X, MY = X, MD = X, CURVE = X;
 let BUCKET = new Uint8Array(0), LINE = new Uint8Array(0);
-let prog = 0, mode = 0, modeT = 0, fadeMs = 600, t = 0, last = 0, running = false, morphSignaled = false;
+// modeT: thời gian trong chế độ hiện tại (fade dùng để tính độ mờ); morphT: đồng hồ RIÊNG của biến hình —
+// không được đặt lại khi chuyển sang fade, nếu không hạt sẽ nhảy về chữ TYPHAT.DEV và chạy lại từ đầu.
+let prog = 0, mode = 0, modeT = 0, morphT = 0, fadeMs = 600, t = 0, last = 0, running = false, morphSignaled = false;
 const mouse = { x: -9999, y: -9999 };
 
 function init(d: { w: number; h: number; dpr: number; cx: number; cy: number; psize: number; pts: Float32Array }) {
@@ -95,7 +97,7 @@ function morph(targets: Float32Array) {
     MD[i] = Math.random() * 0.4;
     CURVE[i] = (Math.random() - 0.5) * 220;
   }
-  mode = 1; modeT = 0; morphSignaled = false;
+  mode = 1; modeT = 0; morphT = 0; morphSignaled = false;
 }
 
 function burst() {
@@ -110,6 +112,7 @@ function tick(now: number) {
   scope.requestAnimationFrame(tick);
   const dt = Math.min((now - last) / 1000, 0.05);
   last = now; t += dt; modeT += dt;
+  if (mode >= 1 && mode <= 3) morphT += dt;
   if (!ctx || !N) return;
 
   ctx.clearRect(0, 0, w, h);
@@ -136,7 +139,7 @@ function tick(now: number) {
       key = BUCKET[i] * ALPHA_LEVELS + Math.round(g * (ALPHA_LEVELS - 1));
     } else {
       // biến hình: bay theo đường cong về tên ở hero, màu chuyển dần sang màu chữ thật
-      const e = smooth(clamp01((modeT - MD[i]) / MORPH_DUR));
+      const e = smooth(clamp01((morphT - MD[i]) / MORPH_DUR));
       const dx = MX[i] - SX[i], dy = MY[i] - SY[i], len = Math.hypot(dx, dy) || 1, bow = Math.sin(Math.PI * e) * CURVE[i];
       X[i] = SX[i] + dx * e + (-dy / len) * bow;
       Y[i] = SY[i] + dy * e + (dx / len) * bow;
@@ -163,7 +166,7 @@ function tick(now: number) {
   }
   used.length = 0;
 
-  if (mode === 1 && !morphSignaled && modeT > MORPH_DUR + 0.45) { morphSignaled = true; mode = 2; scope.postMessage({ type: "morphDone", ok: true }); }
+  if (mode === 1 && !morphSignaled && morphT > MORPH_DUR + 0.45) { morphSignaled = true; mode = 2; scope.postMessage({ type: "morphDone", ok: true }); }
 
   // con trỏ tự vẽ (con trỏ hệ thống bị ẩn trong màn hình loading)
   ctx.globalAlpha = 1;

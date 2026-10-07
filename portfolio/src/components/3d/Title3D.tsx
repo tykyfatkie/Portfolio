@@ -179,7 +179,8 @@ const Title3D = () => {
     };
   }, []);
 
-  return <div ref={mountRef} aria-hidden />;
+  // nằm ngoài dòng chảy bố cục ngay từ đầu: nếu không, canvas mặc định 300×150 sẽ làm tiêu đề cao thêm lúc đo → chữ 3D lệch vị trí
+  return <div ref={mountRef} aria-hidden style={{ position: "absolute", left: 0, top: 0, width: 0, height: 0, pointerEvents: "none" }} />;
 };
 
 export default Title3D;

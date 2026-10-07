@@ -79,6 +79,8 @@ const HeroSection = () => {
       id="hero"
       style={{
         minHeight: "100vh",
+        padding: "4.5rem 0 1.5rem",   // chừa chỗ cho thanh menu cố định phía trên
+        boxSizing: "border-box",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -161,7 +163,7 @@ const HeroSection = () => {
           ref={nameRef}
           style={{
             fontFamily: "var(--font-display)",
-            fontSize: "clamp(3.5rem, 13vw, 10rem)",
+            fontSize: "clamp(3.5rem, min(13vw, 17vh), 10rem)"   /* co theo cả chiều cao để vừa màn hình thấp */,
             letterSpacing: "-.01em",
             lineHeight: .9,
             marginBottom: "1rem",

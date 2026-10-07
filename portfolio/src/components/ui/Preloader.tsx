@@ -91,7 +91,7 @@ const Preloader = ({ onReady, onDone }: Props) => {
       const play = (el: HTMLElement | null, kf: Keyframe[], duration: number, easing: string, delay = 0) =>
         el?.animate(kf, { duration, easing, delay, fill: "forwards" });
       const EXPO = "cubic-bezier(0.87, 0, 0.13, 1)", IN = "cubic-bezier(0.55, 0.055, 0.675, 0.19)";
-      play(uiRef.current, [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(24px)" }], 500, IN);
+      play(uiRef.current, [{ opacity: 1, transform: "translate(-50%, 0)" }, { opacity: 0, transform: "translate(-50%, 24px)" }], 500, IN);
       // Tính điểm đích (đồng bộ, lúc hero còn đúng chỗ), rồi tạm dời trang chính ra khỏi khung nhìn để các canvas WebGL của hero
       // tự dừng vẽ (IntersectionObserver) → dồn GPU cho hiệu ứng hạt. Đưa về lại ngay trước khi màn hình mở.
       const morphP = particles.current?.morph() ?? Promise.resolve(false);
