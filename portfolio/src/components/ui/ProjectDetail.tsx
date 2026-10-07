@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { gsap } from "gsap";
 import type { Project } from "../../data/projects";
 import { playClose, playOpen, playTick } from "../../hooks/useSound";
+import DeviceMockup from "./DeviceMockup";
 
 interface Props {
   project: Project;
@@ -17,10 +18,8 @@ const roleOf = (tag: string) => tag.split("·")[1]?.trim() ?? tag;
 const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
   const backRef  = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [imgOk, setImgOk] = useState(true);
   const closing = useRef(false);
 
-  useEffect(() => { setImgOk(true); }, [project.id]);
 
   const finalRect = () => {
     const w = Math.min(1080, window.innerWidth * 0.92), h = Math.min(640, window.innerHeight * 0.86);
@@ -72,7 +71,6 @@ const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
   }, [onNavigate]);
 
   const style = { "--c": project.color } as CSSProperties;
-  const showImg = project.image && imgOk;
 
   return (
     <div className="pd" style={style}>
@@ -81,9 +79,7 @@ const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
         <button className="pd__close" onClick={close} aria-label="Close" data-hover>✕ <span>ESC</span></button>
 
         <div className="pd__visual">
-          {showImg
-            ? <img src={project.image} alt={`${project.title} screenshot`} onError={() => setImgOk(false)} />
-            : <div className="pd__ph"><span>{project.number}</span></div>}
+          <DeviceMockup project={project} />
           <span className="pd__visual-fade" />
           <span className="pd__team" data-pd>TEAM · {project.teamSize}</span>
         </div>

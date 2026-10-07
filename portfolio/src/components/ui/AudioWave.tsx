@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useBackgroundMusic } from "../../hooks/useBackgroundMusic";
 import { bootAudio } from "../../hooks/useSound";
 import { ensureAnalyser, level } from "../../lib/music";
+import { pushBeat } from "../../lib/beat";
 
 const BARS = 24;
 const REST = 0.14;
@@ -26,6 +27,7 @@ const AudioWave = () => {
       cur.fill(REST);
       paint();
       root.style.setProperty("--beat", "0");
+      pushBeat(0);
       return;
     }
 
@@ -54,6 +56,7 @@ const AudioWave = () => {
         level.value = level.bass * 0.7;
       }
       root.style.setProperty("--beat", level.bass.toFixed(3));
+      pushBeat(level.bass);
       raf = requestAnimationFrame(tick);
     };
     tick();
@@ -64,6 +67,7 @@ const AudioWave = () => {
     <button
       className={`audio-wave${playing ? " is-on" : ""}`}
       data-hover
+      data-cursor={playing ? "MUTE" : "PLAY"}
       onClick={() => { bootAudio(); toggle(); }}
       aria-label={playing ? "Tắt nhạc nền" : "Bật nhạc nền"}
       title={playing ? "Tắt nhạc nền" : "Bật nhạc nền"}

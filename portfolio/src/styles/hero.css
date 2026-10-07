@@ -98,3 +98,7 @@
 .audio-wave.is-on .audio-wave__label i { color: var(--neon); }
 @media (max-width: 1100px) { .audio-wave__label { display: none; } .audio-wave { padding: 0 .8rem; } }
 @media (max-width: 720px) { .audio-wave { height: 38px; } .audio-wave__bars span:nth-child(odd) { display: none; } }
+
+/* Khi bản chữ 3D (Three.js) đã sẵn sàng thì ẩn bản DOM; vẫn giữ bố cục để chữ 3D và hiệu ứng loading khớp vị trí */
+.xt-title.title3d-on .xt-front,
+.xt-title.title3d-on .xt-back { visibility: hidden; }

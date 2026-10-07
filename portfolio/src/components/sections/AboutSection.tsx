@@ -1,9 +1,12 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { gsap } from "gsap";
+import { lazy, Suspense } from "react";
 import Tilt from "../ui/Tilt";
 import ScrambleText from "../ui/ScrambleText";
 import ProfileCard3D from "../ui/ProfileCard3D";
 import Backdrop from "../3d/Backdrops";
+
+const CommitCity = lazy(() => import("../3d/CommitCity"));
 
 const STATS = [
   { value: "3+",   label: "Years Learning",    icon: "📅" },
@@ -155,6 +158,15 @@ const AboutSection = () => (
             </Tilt>
           </div>
         ))}
+      </div>
+
+      {/* Hoạt động GitHub: thành phố commit 3D từ dữ liệu thật */}
+      <div data-fx="up" className="about-journey-head" style={{ marginTop: "5rem" }}>
+        <span className="section-label" style={{ margin: 0 }}>Commit city</span>
+        <span className="about-journey-line" />
+      </div>
+      <div data-fx="zoom">
+        <Suspense fallback={<div className="cc__canvas" />}><CommitCity /></Suspense>
       </div>
     </div>
   </section>

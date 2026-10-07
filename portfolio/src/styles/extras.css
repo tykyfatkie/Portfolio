@@ -1,0 +1,32 @@
+/* ============================================================
+   EXTRAS — con trỏ có nhãn, bảng đo FPS
+   ============================================================ */
+.cursor-ring { display: grid; place-items: center; }
+.cursor-ring .cursor-label {
+  font-family: var(--font-mono); font-size: .58rem; font-weight: 700; letter-spacing: .18em;
+  color: #fff; opacity: 0; transform: scale(.6);
+  transition: opacity .25s, transform .35s cubic-bezier(.16, 1, .3, 1);
+  pointer-events: none;
+}
+.cursor-ring.labeled {
+  width: 92px; height: 92px;
+  border-color: var(--neon3);
+  background: rgba(0, 207, 255, .10);
+  opacity: 1;
+}
+.cursor-ring.labeled .cursor-label { opacity: 1; transform: none; }
+.cursor-dot.hovering { transition: width .2s, height .2s, background .2s, opacity .2s; }
+body:has(.cursor-ring.labeled) .cursor-dot { opacity: 0; }
+
+.fps {
+  position: fixed; left: 1rem; top: 5.2rem; z-index: 600;
+  padding: .55rem .7rem; width: 170px;
+  font-family: var(--font-mono); pointer-events: none;
+  background: rgba(5, 5, 5, .82); border: 1px solid rgba(255, 255, 255, .14); border-radius: 8px;
+  backdrop-filter: blur(8px);
+}
+.fps__row { display: flex; align-items: baseline; gap: .45rem; margin-bottom: .4rem; font-size: .6rem; color: var(--muted); }
+.fps__row b { font-size: 1.5rem; line-height: 1; font-weight: 700; }
+.fps__row em { font-style: normal; margin-left: auto; }
+.fps__row em + em { margin-left: .4rem; }
+.fps canvas { display: block; width: 100%; height: 30px; }

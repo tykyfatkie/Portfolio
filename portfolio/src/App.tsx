@@ -9,6 +9,7 @@ import AudioController from "./components/ui/AudioController";
 import ScrollProgress from "./components/ui/ScrollProgress";
 import Preloader from "./components/ui/Preloader";
 import CommandPalette from "./components/ui/CommandPalette";
+import FpsMeter from "./components/ui/FpsMeter";
 import { DeckProvider, SlideDeck } from "./components/ui/SlideDeck";
 
 const SLIDE_IDS    = ["hero", "about", "skills", "projects", "contact"];
@@ -142,6 +143,7 @@ const Main = () => {
         </>
       </SlideDeck>
       <CommandPalette />
+      <FpsMeter />
       <ClickPrompt visible={prompted} />
     </DeckProvider>
   );

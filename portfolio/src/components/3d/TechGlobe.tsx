@@ -179,7 +179,7 @@ const TechGlobe = ({ active }: Props) => {
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: "100%", height: "min(640px, 92vw)", cursor: "grab" }} />;
+  return <div ref={mountRef} data-cursor="DRAG" style={{ width: "100%", height: "min(640px, 92vw)", cursor: "grab" }} />;
 };
 
 export default TechGlobe;

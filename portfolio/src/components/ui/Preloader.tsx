@@ -78,13 +78,19 @@ const Preloader = ({ onReady, onDone }: Props) => {
       await new Promise(r => setTimeout(r, 450));   // giữ chữ hoàn chỉnh một nhịp
       if (cancelled) return;
 
-      // 3) Outro: hạt nổ tung rồi màn hình tách đôi (lúc này không còn việc nặng nào tranh main thread)
-      particles.current?.burst();
+      // 3) Outro: các hạt biến hình thành đúng tên "NGUYEN TANG TAI PHAT" ở hero (đang nằm sẵn dưới màn hình loading),
+      //    rồi màn hình tách đôi để lộ chữ thật khớp đúng vị trí và các hạt tan đi.
+      //    Nếu không tìm thấy tên ở hero thì dùng hiệu ứng nổ tung làm dự phương.
+      gsap.to(uiRef.current, { opacity: 0, y: 24, duration: 0.5, ease: "power3.in" });
+      const morphed = (await particles.current?.morph()) ?? false;
+      if (cancelled) return;
+      if (!morphed) particles.current?.burst();
+      else await new Promise(r => setTimeout(r, 250));
+      particles.current?.fade(morphed ? 800 : 600);
       gsap.timeline({ onComplete: onDone })
-        .to(uiRef.current, { opacity: 0, y: 30, duration: 0.5, ease: "power3.in" }, 0)
         .to(cornerRef.current, { opacity: 0, scale: 1.12, duration: 0.7, ease: "power3.in" }, 0)
-        .to(topRef.current, { yPercent: -100, duration: 1.1, ease: "expo.inOut" }, 0.35)
-        .to(botRef.current, { yPercent: 100, duration: 1.1, ease: "expo.inOut" }, 0.35);
+        .to(topRef.current, { yPercent: -100, duration: 1.1, ease: "expo.inOut" }, morphed ? 0.05 : 0.35)
+        .to(botRef.current, { yPercent: 100, duration: 1.1, ease: "expo.inOut" }, morphed ? 0.05 : 0.35);
     });
 
     return () => { cancelled = true; cancelAnimationFrame(raf); };

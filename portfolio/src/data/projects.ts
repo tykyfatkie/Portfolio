@@ -12,6 +12,8 @@ export interface Project {
   tech: string[];
   color: string;
   teamSize: number;
+  /** Thiết bị hiển thị trong khung chi tiết: laptop (mặc định) hoặc phone */
+  device?: "laptop" | "phone";
   image?: string;
   githubUrl?: string;
   liveUrl?: string;
@@ -29,7 +31,7 @@ export const PROJECTS: Project[] = [
     id: 2, number: "02", tag: "Mobile · Full-stack Dev", title: "MÔME Food Order",
     description: "Food ordering app for Vinhomes District 9 residents with baby health tracking: weight, height, feeding schedules, vaccination records and growth progress.",
     tech: ["Android Studio", "SQLite", "TogetherAI API", "PayOS"],
-    teamSize: 2, image: "/images/projects/mome.png",
+    teamSize: 2, device: "phone", image: "/images/projects/mome.png",
     liveUrl: "https://apkpure.com/mômê/com.dk.foodorder", color: "#ff2d78",
   },
   {

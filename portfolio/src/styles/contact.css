@@ -1,0 +1,50 @@
+/* ============================================================
+   CONTACT — địa cầu hologram + bảng điều khiển truyền tin
+   ============================================================ */
+.ct-wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; }
+.ct-head { text-align: center; max-width: 780px; margin: 0 auto 1.5rem; }
+.ct-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 2rem; align-items: center; }
+.ct-globe { position: relative; }
+.contact-globe { width: 100%; height: min(600px, 80vw); }
+.ct-globe__hint { text-align: center; margin-top: -.5rem; font-family: var(--font-mono); font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+
+.ct-console {
+  border-radius: 14px; overflow: hidden;
+  background: rgba(8, 10, 8, .86);
+  border: 1px solid rgba(57, 255, 20, .28);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .6), 0 0 50px rgba(57, 255, 20, .08);
+  backdrop-filter: blur(10px);
+}
+.ct-console__bar { display: flex; align-items: center; gap: .45rem; padding: .7rem 1rem; border-bottom: 1px solid rgba(255, 255, 255, .08); background: rgba(255, 255, 255, .03); }
+.ct-console__bar i { width: 10px; height: 10px; border-radius: 50%; background: #ff5f56; }
+.ct-console__bar i:nth-child(2) { background: #ffbd2e; }
+.ct-console__bar i:nth-child(3) { background: #27c93f; }
+.ct-console__bar span { margin-left: .6rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .08em; color: var(--muted); }
+.ct-form { display: flex; flex-direction: column; gap: 1rem; padding: 1.6rem 1.6rem 1rem; position: relative; }
+.ct-form label { display: block; }
+.ct-form label > span { display: block; margin-bottom: .35rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .08em; color: var(--neon3); }
+.ct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.ct-send {
+  padding: 1rem; font-family: var(--font-mono); font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: #000; background: var(--neon); border: 0; border-radius: 5px; cursor: none; transition: all .35s;
+}
+.ct-send:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(57, 255, 20, .35); }
+.ct-send.is-sending { background: #1d1d1d; color: var(--neon3); }
+.ct-send.is-sent, .ct-send.is-mailto { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+.ct-send.is-error { background: var(--neon2); color: #fff; }
+
+.ct-status { min-height: 1.4em; font-family: var(--font-mono); font-size: .68rem; line-height: 1.6; color: var(--muted); }
+.ct-status.is-sent, .ct-status.is-mailto { color: var(--neon); }
+.ct-status.is-error { color: var(--neon2); }
+.ct-caret { animation: blink 1s step-end infinite; color: var(--neon); }
+.ct-socials { display: flex; gap: .7rem; padding: .4rem 1.6rem 1.5rem; }
+.ct-socials a {
+  --c: var(--neon);
+  width: 46px; height: 46px; display: grid; place-items: center; text-decoration: none;
+  font-family: var(--font-mono); font-size: .7rem; color: var(--muted);
+  background: var(--glass); border: .5px solid var(--glass-border); border-radius: 8px; transition: all .3s;
+}
+.ct-socials a:hover { color: var(--c); border-color: var(--c); transform: translateY(-4px); box-shadow: 0 10px 30px color-mix(in srgb, var(--c) 30%, transparent); }
+
+@media (max-width: 1000px) { .ct-grid { grid-template-columns: 1fr; } .ct-row { grid-template-columns: 1fr; } }

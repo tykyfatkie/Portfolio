@@ -3,9 +3,10 @@ import { motion } from "motion/react";
 import { gsap } from "gsap";
 import SplitChars from "../ui/SplitChars";
 import Magnetic from "../ui/Magnetic";
-import Backdrop, { Warp } from "../3d/Backdrops";
+import Backdrop, { BeatWarp } from "../3d/Backdrops";
 
 const HeroShapes = lazy(() => import("../3d/HeroShapes"));
+const Title3D = lazy(() => import("../3d/Title3D"));
 
 const EXTRUDE_LAYERS = 12;
 const EXTRUDE_STEP = 6;
@@ -87,7 +88,7 @@ const HeroSection = () => {
     >
       {/* Lớp 1: warp field (ThreeUI), trôi ngược chiều chuột */}
       <div ref={bgRef} style={{ position: "absolute", inset: "-4%", zIndex: 0, pointerEvents: "none" }}>
-        <Suspense fallback={null}><Warp variant="streaks" speed={9} streakOpacity={0.6} brightness={0.95} /></Suspense>
+        <Suspense fallback={null}><BeatWarp /></Suspense>
       </div>
 
       {/* Lớp 2: sàn lưới phối cảnh chuyển động */}
@@ -184,6 +185,7 @@ const HeroSection = () => {
               NGUYEN<br />TANG TAI<br />PHAT
             </span>
           ))}
+          <Suspense fallback={null}><Title3D /></Suspense>
         </h1>
 
         {/* Divider line */}

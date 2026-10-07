@@ -207,3 +207,19 @@
   transform: translateY(-18%);
   filter: drop-shadow(0 0 16px rgba(57, 255, 20, .38)) drop-shadow(0 12px 18px rgba(0, 0, 0, .55));
 }
+
+/* ── Commit city ── */
+.cc { border-radius: 16px; overflow: hidden; background: linear-gradient(165deg, rgba(57, 255, 20, .05), rgba(255, 255, 255, .015)); border: .5px solid rgba(57, 255, 20, .25); }
+.cc__stats { display: flex; align-items: flex-end; gap: 2.4rem; flex-wrap: wrap; padding: 1.2rem 1.6rem .4rem; }
+.cc__stats b { display: block; font-family: var(--font-display); font-size: 2.3rem; line-height: 1; letter-spacing: .02em; color: var(--neon); text-shadow: 0 0 18px rgba(57, 255, 20, .4); }
+.cc__stats span { font-family: var(--font-mono); font-size: .58rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.cc__stats em { margin-left: auto; font-style: normal; font-family: var(--font-mono); font-size: .6rem; letter-spacing: .1em; color: var(--muted); }
+.cc__stage { position: relative; }
+.cc__canvas { width: 100%; height: 440px; }
+.cc__tip {
+  position: absolute; left: 0; top: 0; pointer-events: none; opacity: 0; transition: opacity .15s;
+  padding: .45rem .7rem; font-family: var(--font-mono); font-size: .66rem; color: #ddd; white-space: nowrap;
+  background: rgba(5, 5, 5, .9); border: 1px solid rgba(57, 255, 20, .5); border-radius: 6px; z-index: 3;
+}
+.cc__tip b { color: var(--neon); font-size: .9rem; margin-right: .3rem; }
+.cc__tip span { display: block; margin-top: .15rem; color: var(--muted); font-size: .58rem; }

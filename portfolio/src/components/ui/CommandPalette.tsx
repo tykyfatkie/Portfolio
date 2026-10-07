@@ -39,6 +39,7 @@ const CommandPalette = () => {
       { id: "github", group: "Links", label: "Open GitHub", glyph: "↗", hint: "tykyfatkie", keywords: "code repo", run: () => window.open("https://github.com/tykyfatkie", "_blank", "noopener") },
       { id: "email",  group: "Links", label: "Send email",  glyph: "↗", hint: "gg.fctaiphat@yahoo.com", keywords: "contact mail", run: () => { window.location.href = "mailto:gg.fctaiphat@yahoo.com"; } },
       { id: "copy",   group: "Links", label: "Copy email address", glyph: "⧉", keywords: "clipboard", run: () => { navigator.clipboard?.writeText("gg.fctaiphat@yahoo.com"); } },
+      { id: "fps",    group: "System", label: "Toggle FPS meter", glyph: "◷", keywords: "performance stats frame rate", run: () => window.dispatchEvent(new Event("app:fps")) },
       { id: "music",  group: "System", label: isPlaying() ? "Turn music off" : "Turn music on", glyph: "♪", keywords: "sound audio theme", run: () => { bootAudio(); toggleMusic(); } },
     ];
     return list;

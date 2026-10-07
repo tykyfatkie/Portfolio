@@ -15,6 +15,8 @@ export const assets = {
 const IMAGES = [
   "/images/about/typhat.jpg",
   "/images/about/typhat-cutout.png",
+  "/images/earth-mask.jpg",
+  "/fonts/BebasNeue-Regular.woff",
   "/images/projects/mommilk.png",
   "/images/projects/mome.png",
   "/images/projects/orchid.png",
@@ -72,7 +74,9 @@ const tasks: Task[] = [
           m.loadWarp(), m.loadLiquid(), m.loadRibbon(), m.loadStream(), m.loadDots(), m.loadHorizon(),
         ])),
         () => import("../components/3d/TechGlobe"),
-        () => import("../components/3d/FloatingShapes"),
+        () => import("../components/3d/ContactGlobe"),
+        () => import("../components/3d/CommitCity"),
+        () => import("../components/3d/Title3D"),
         () => import("../components/3d/AboutOrbit"),
         () => import("../components/3d/HeroShapes"),
       ];

@@ -112,6 +112,18 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
       tl.to(inn, { clipPath: "inset(0% 0% 0% 0%)", duration: D, ease: "power3.inOut", clearProps: "clipPath" }, T);
       tl.to(inKids, { y: 0, scale: 1, duration: D + 0.3, ease: "power3.out", clearProps: "transform,transformOrigin" }, T);
 
+      // 3b) Xung lệch màu RGB: tách kênh đỏ/xanh rồi gộp lại, bật filter chỉ trong lúc chuyển
+      const deckEl = deckRef.current;
+      const cr = document.getElementById("chroma-r"), cb = document.getElementById("chroma-b");
+      if (deckEl && cr && cb) {
+        deckEl.style.filter = "url(#chroma)";
+        const amp = 16;
+        tl.to(cr, { attr: { dx: -amp }, duration: 0.32, ease: "power2.out" }, 0.05)
+          .to(cb, { attr: { dx: amp }, duration: 0.32, ease: "power2.out" }, 0.05)
+          .to([cr, cb], { attr: { dx: 0 }, duration: 0.95, ease: "power3.inOut" }, 0.37)
+          .call(() => { deckEl.style.filter = ""; }, undefined, 1.35);
+      }
+
       // 4) Hiệu ứng "nhảy warp": canvas hyperspace của ThreeUI phủ lên rồi tan đi
       if (jump) {
         tl.set(jump, { yPercent: 0, opacity: 0 }, 0)
@@ -228,6 +240,20 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
           <Warp variant="hyperspace" speed={14} streakOpacity={0.9} tileOpacity={0} brightness={1.1} />
         </Suspense>
       </div>
+
+      <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
+        <defs>
+          <filter id="chroma" x="-3%" y="-3%" width="106%" height="106%" colorInterpolationFilters="sRGB">
+            <feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r" />
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g" />
+            <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b" />
+            <feOffset id="chroma-r" in="r" dx="0" dy="0" result="ro" />
+            <feOffset id="chroma-b" in="b" dx="0" dy="0" result="bo" />
+            <feBlend in="ro" in2="g" mode="screen" result="rg" />
+            <feBlend in="rg" in2="bo" mode="screen" />
+          </filter>
+        </defs>
+      </svg>
 
       <div ref={wipeRef} className="deck-wipe" />
 

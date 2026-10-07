@@ -179,3 +179,57 @@
   .pd__panel { grid-template-columns: 1fr; overflow-y: auto; }
   .pd__visual { min-height: 200px; }
 }
+
+/* ── Mô hình thiết bị 3D trong khung chi tiết ── */
+.pd__visual { background: radial-gradient(ellipse at 50% 55%, color-mix(in srgb, var(--c) 18%, #0b0b0b), #070707 75%); }
+.dm { position: absolute; inset: 0; display: grid; place-items: center; }
+.dm__glow { position: absolute; width: 70%; height: 55%; border-radius: 50%; background: var(--c); filter: blur(70px); opacity: .28; }
+.dm__float { animation: dmFloat 6s ease-in-out infinite; transform-style: preserve-3d; }
+@keyframes dmFloat { 0%, 100% { transform: translateY(-8px); } 50% { transform: translateY(10px); } }
+.dm__scene { transform-style: preserve-3d; will-change: transform; }
+.dm-ph { position: absolute; inset: 0; display: grid; place-items: center;
+  background: radial-gradient(circle at 70% 25%, color-mix(in srgb, var(--c) 45%, transparent), transparent 60%), linear-gradient(135deg, #0d0d0d, color-mix(in srgb, var(--c) 16%, #0a0a0a)); }
+.dm-ph span { font-family: var(--font-display); font-size: 7rem; line-height: 1; color: transparent; -webkit-text-stroke: 1.5px color-mix(in srgb, var(--c) 75%, transparent); }
+
+/* Laptop: nắp dựng đứng, thân nằm ngang kéo về phía người xem */
+.dm-laptop { --w: min(430px, 34vw); position: relative; width: var(--w); transform-style: preserve-3d; }
+.dm-laptop__lid {
+  position: relative; width: 100%; aspect-ratio: 16 / 10;
+  padding: 3.2%; border-radius: 12px 12px 3px 3px;
+  background: linear-gradient(160deg, #2c2c2c, #131313);
+  border: 1px solid #3a3a3a;
+  transform-origin: 50% 100%;
+  transform: rotateX(8deg);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--c) 28%, transparent), 0 20px 50px rgba(0, 0, 0, .6);
+}
+.dm-laptop__screen { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 4px; background: #050505; }
+.dm-laptop__screen img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.dm-laptop__shine { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(115deg, rgba(255, 255, 255, .13), transparent 35%); pointer-events: none; }
+.dm-laptop__deck {
+  position: absolute; left: -7%; top: 100%; width: 114%; height: calc(var(--w) * .62);
+  border-radius: 4px 4px 22px 22px;
+  background: linear-gradient(#262626, #121212);
+  border: 1px solid #333;
+  transform-origin: 50% 0;
+  transform: rotateX(90deg);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, .6);
+}
+.dm-laptop__keys {
+  position: absolute; left: 6%; right: 6%; top: 8%; height: 46%;
+  background:
+    repeating-linear-gradient(90deg, #0a0a0a 0 22px, #1c1c1c 22px 24px),
+    repeating-linear-gradient(0deg, #0a0a0a 0 20px, #1c1c1c 20px 22px);
+  background-blend-mode: normal; border-radius: 4px; opacity: .9;
+}
+.dm-laptop__pad { position: absolute; left: 37%; right: 37%; bottom: 10%; height: 24%; border-radius: 6px; background: #181818; border: 1px solid #2c2c2c; }
+
+/* Điện thoại */
+.dm-phone { position: relative; width: min(230px, 20vw); aspect-ratio: 9 / 19; transform-style: preserve-3d; }
+.dm-phone__screen {
+  position: absolute; inset: 0; overflow: hidden;
+  border-radius: 34px; border: 8px solid #161616; background: #050505;
+  box-shadow: 0 0 0 1.5px #333, 0 0 50px color-mix(in srgb, var(--c) 30%, transparent), 0 30px 60px rgba(0, 0, 0, .65);
+}
+.dm-phone__screen img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+.dm-phone__notch { position: absolute; left: 50%; top: 8px; width: 34%; height: 18px; margin-left: -17%; border-radius: 99px; background: #050505; }
+.dm-phone__shine { position: absolute; inset: 0; border-radius: 34px; background: linear-gradient(120deg, rgba(255, 255, 255, .16), transparent 38%); pointer-events: none; transform: translateZ(2px); }

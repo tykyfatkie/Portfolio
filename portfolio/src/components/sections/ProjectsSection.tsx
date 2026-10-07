@@ -43,7 +43,7 @@ const Card = ({ p, offset, onPick }: { p: Project; offset: number; onPick: (el: 
   } as CSSProperties;
 
   return (
-    <div className={`pj-card${offset === 0 ? " is-active" : ""}`} style={style}
+    <div className={`pj-card${offset === 0 ? " is-active" : ""}`} style={style} data-cursor={offset === 0 ? "OPEN" : abs <= 3 ? "VIEW" : undefined}
       onMouseMove={onMove} onMouseLeave={onLeave}
       onClick={e => onPick(e.currentTarget)} data-hover>
       <div ref={inRef} className="pj-card__in">
@@ -163,7 +163,7 @@ const ProjectsSection = () => {
 
         {/* Băng chuyền 3D */}
         <div data-fx="zoom" className="pj-carousel">
-          <div className="pj-stage" onPointerDown={onDown} onPointerMove={onMoveStage} onPointerUp={onUp} onPointerCancel={onUp} onPointerLeave={onUp}>
+          <div className="pj-stage" data-cursor="DRAG" onPointerDown={onDown} onPointerMove={onMoveStage} onPointerUp={onUp} onPointerCancel={onUp} onPointerLeave={onUp}>
             {PROJECTS.map((p, i) => <Card key={p.id} p={p} offset={i - active} onPick={el => pick(i, el)} />)}
           </div>
 

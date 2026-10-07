@@ -8,6 +8,8 @@ import "./styles/skills.css";
 import "./styles/preloader.css";
 import "./styles/projects3d.css";
 import "./styles/palette.css";
+import "./styles/extras.css";
+import "./styles/contact.css";
 import App from "./App";
 
 createRoot(document.getElementById("root")!).render(
