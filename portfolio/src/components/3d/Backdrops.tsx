@@ -38,7 +38,7 @@ const Backdrop = ({ kind, opacity = 0.5, blend = "normal", vignette = true }: Pr
       {kind === "liquid"  && <Liquid speed={0.7 + b * 1.6} morph={1.2 + b * 1.4} mouseAmount={0.35} metal={1.1} camera={6.2} tintHue={125} tintAmount={0.55} />}
       {kind === "ribbon"  && <Ribbon speed={0.8 + b * 2.4} pointerAmount={1.2} brightness={0.9 + b * 0.5} hue={0} />}
       {kind === "stream"  && <Stream speed={0.8 + b * 2.2} fidelity={0.5} brightness={0.85 + b * 0.5} hue={0} />}
-      {kind === "dots"    && <Dots speed={0.8 + b * 1.5} gridScale={46} mouseAmount={0.12} pulseSpeed={0.5 + b * 2.5} radius={0.18 + b * 0.14} opacity={0.5 + b * 0.35} hue={90} />}
+      {kind === "dots"    && <Dots speed={0.8 + b * 1.5} gridScale={54} mouseAmount={0.12} pulseSpeed={0.5 + b * 2.5} radius={0.1 + b * 0.08} opacity={0.4 + b * 0.25} hue={90} />}
       {kind === "horizon" && <Horizon speed={0.8 + b * 1.8} glow={1.1 + b * 1.4} vignette={1.2} hue={0} />}
     </Suspense>
     {vignette && <div className="backdrop__vignette" />}
