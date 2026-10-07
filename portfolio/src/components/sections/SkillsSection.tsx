@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties } from 
 import { gsap } from "gsap";
 import ScrambleText from "../ui/ScrambleText";
 import Tilt from "../ui/Tilt";
+import Defer from "../ui/Defer";
 import Backdrop from "../3d/Backdrops";
 import { SKILL_GROUPS, GLOBE_LABELS, type SkillGroup } from "../../data/skills";
 
@@ -113,9 +114,11 @@ const SkillsSection = () => {
         <div className="skills-main">
           {/* Quả cầu: nhãn tô màu theo nhóm, sáng lên khi rê chuột vào nhóm tương ứng */}
           <div data-fx="zoom" className="skills-globe">
-            <Suspense fallback={<div style={{ height: "min(640px, 92vw)" }} />}>
-              <TechGlobe active={active} />
-            </Suspense>
+            <Defer ms={1100} fallback={<div style={{ height: "min(640px, 92vw)" }} />}>
+              <Suspense fallback={<div style={{ height: "min(640px, 92vw)" }} />}>
+                <TechGlobe active={active} />
+              </Suspense>
+            </Defer>
             <div className="skills-legend">
               {SKILL_GROUPS.map(g => (
                 <button
