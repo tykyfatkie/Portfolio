@@ -48,6 +48,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
   const getSlides = () => Array.from(deckRef.current?.children ?? []) as HTMLElement[];
 
   const ctx = useRef<gsap.Context | null>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   // Đặt vị trí ban đầu trước khi paint; gsap.context để dọn toàn bộ tween khi unmount
   useLayoutEffect(() => {
@@ -73,14 +74,18 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     setIndex(next);
     history.replaceState(null, "", `#${ids[next]}`);
 
+    // Lần chuyển trước chưa chạy xong (quay lại nhanh, vd hero → about → hero) → tua nó tới cuối ngay.
+    // Nếu không, onComplete của nó chạy sau và giấu mất slide đang được chuyển tới (màn hình trống/đứng hình).
+    tlRef.current?.progress(1);
+
     inn.scrollTop = fromEdge && dir < 0 ? inn.scrollHeight : 0;
 
     const outItems = fxItems(out), inItems = fxItems(inn);
     const inKids = Array.from(inn.children);
 
     // Chuyển mượt kiểu crossfade: slide cũ trôi nhẹ + mờ dần, slide mới trôi vào từ hướng ngược lại
-    gsap.killTweensOf([...outItems, ...inItems]);
-    gsap.set(inn, { autoAlpha: 1, opacity: 0, yPercent: 0, scale: 1, zIndex: 2 });
+    gsap.killTweensOf([out, inn, ...inKids, ...outItems, ...inItems]);
+    gsap.set(inn, { autoAlpha: 1, opacity: 0, yPercent: 0, y: 0, scale: 1, zIndex: 2 });
     gsap.set(out, { zIndex: 1 });
     inItems.forEach(el => gsap.set(el, fxFrom(el)));
     gsap.set(inKids, { y: dir * 48, scale: 0.985, transformOrigin: "50% 40%" });
@@ -93,11 +98,14 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     ctx.current.add(() => {
       const tl = gsap.timeline({
         onComplete: () => {
+          if (tlRef.current === tl) tlRef.current = null;
           // slide cũ về vị trí chờ phía dưới màn hình để các canvas 3D của nó tự dừng render
-          gsap.set(out, { autoAlpha: 0, scale: 1, y: 0, yPercent: 100, opacity: 1 });
+          // (bỏ qua nếu nó lại đang là slide hiện tại vì người dùng đã quay về)
+          if (out !== getSlides()[cur.current]) gsap.set(out, { autoAlpha: 0, scale: 1, y: 0, yPercent: 100, opacity: 1 });
           gsap.set(outItems, { opacity: 1, clearProps: "filter,transform" });
         },
       });
+      tlRef.current = tl;
 
       // 1) Slide cũ: trôi nhẹ ngược hướng, thu nhỏ chút và mờ dần
       tl.to(out, { opacity: 0, y: -dir * 40, scale: 0.98, duration: 0.6, ease: "power2.inOut" }, 0);
