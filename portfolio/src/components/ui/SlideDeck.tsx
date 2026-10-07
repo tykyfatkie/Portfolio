@@ -76,82 +76,42 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     inn.scrollTop = fromEdge && dir < 0 ? inn.scrollHeight : 0;
 
     const outItems = fxItems(out), inItems = fxItems(inn);
-    const wipe = wipeRef.current, jump = jumpRef.current;
     const inKids = Array.from(inn.children);
 
-    // Slide mới nằm trên, bị che hoàn toàn bằng clip-path rồi được "vén" ra theo dải sáng
+    // Chuyển mượt kiểu crossfade: slide cũ trôi nhẹ + mờ dần, slide mới trôi vào từ hướng ngược lại
     gsap.killTweensOf([...outItems, ...inItems]);
-    gsap.set(inn, {
-      autoAlpha: 1, opacity: 1, yPercent: 0, scale: 1, zIndex: 2,
-      clipPath: dir > 0 ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
-      // slide trong suốt nên cần lớp tối mờ che nội dung slide cũ trong lúc chuyển, rồi tan dần để lộ thế giới 3D phía sau
-      backgroundColor: "rgba(5,5,5,.62)", backdropFilter: "blur(10px)",
-    });
+    gsap.set(inn, { autoAlpha: 1, opacity: 0, yPercent: 0, scale: 1, zIndex: 2 });
     gsap.set(out, { zIndex: 1 });
     inItems.forEach(el => gsap.set(el, fxFrom(el)));
-    gsap.set(inKids, { y: dir * 140, scale: 0.9, transformOrigin: "50% 25%" });
+    gsap.set(inKids, { y: dir * 48, scale: 0.985, transformOrigin: "50% 40%" });
 
-    const D = 1.3;       // thời gian vén slide
-    const T = 0.22;      // độ trễ so với lúc slide cũ bắt đầu tản
+    const D = 0.95;      // thời gian slide mới hiện ra
+    const T = 0.18;      // độ trễ so với lúc slide cũ bắt đầu mờ
     ctx.current.add(() => {
       const tl = gsap.timeline({
         onComplete: () => {
           // slide cũ về vị trí chờ phía dưới màn hình để các canvas 3D của nó tự dừng render
-          gsap.set(out, { autoAlpha: 0, scale: 1, yPercent: 100, opacity: 1 });
+          gsap.set(out, { autoAlpha: 0, scale: 1, y: 0, yPercent: 100, opacity: 1 });
           gsap.set(outItems, { opacity: 1, clearProps: "filter,transform" });
         },
       });
 
-      // 1) Nội dung slide cũ tản ra từng khối: trôi ngược hướng, mờ nhoè dần
-      tl.to(outItems, {
-        opacity: 0, y: -dir * 70, scale: 0.92, filter: "blur(10px)",
-        duration: 0.55, ease: "power2.in", stagger: 0.04,
-      }, 0);
-      // 2) Cả slide cũ bị "hút" lướt qua camera: phóng to, mờ dần
-      tl.to(out, { scale: 1.18, opacity: 0, duration: D * 0.9, ease: "power3.in" }, 0.05);
+      // 1) Slide cũ: trôi nhẹ ngược hướng, thu nhỏ chút và mờ dần
+      tl.to(out, { opacity: 0, y: -dir * 40, scale: 0.98, duration: 0.6, ease: "power2.inOut" }, 0);
 
-      // 3) Slide mới được vén ra, nội dung từ xa lao vào đúng chỗ (parallax so với mép vén)
-      tl.to(inn, { clipPath: "inset(0% 0% 0% 0%)", duration: D, ease: "power3.inOut", clearProps: "clipPath" }, T);
-      tl.to(inn, { backgroundColor: "rgba(5,5,5,0)", duration: 0.9, ease: "power1.inOut", clearProps: "backgroundColor,backdropFilter" }, T + D * 0.5);
-      tl.to(inKids, { y: 0, scale: 1, duration: D + 0.3, ease: "power3.out", clearProps: "transform,transformOrigin" }, T);
+      // 2) Slide mới: hiện dần, nội dung trôi vào đúng chỗ
+      tl.to(inn, { opacity: 1, duration: D * 0.8, ease: "power1.out", clearProps: "opacity" }, T);
+      tl.to(inKids, { y: 0, scale: 1, duration: D + 0.2, ease: "power3.out", clearProps: "transform,transformOrigin" }, T);
 
-      // 3b) Xung lệch màu RGB: tách kênh đỏ/xanh rồi gộp lại, bật filter chỉ trong lúc chuyển
-      const deckEl = deckRef.current;
-      const cr = document.getElementById("chroma-r"), cb = document.getElementById("chroma-b");
-      if (deckEl && cr && cb) {
-        deckEl.style.filter = "url(#chroma)";
-        const amp = 16;
-        tl.to(cr, { attr: { dx: -amp }, duration: 0.32, ease: "power2.out" }, 0.05)
-          .to(cb, { attr: { dx: amp }, duration: 0.32, ease: "power2.out" }, 0.05)
-          .to([cr, cb], { attr: { dx: 0 }, duration: 0.95, ease: "power3.inOut" }, 0.37)
-          .call(() => { deckEl.style.filter = ""; }, undefined, 1.35);
-      }
-
-      // 4) Hiệu ứng "nhảy warp": canvas hyperspace của ThreeUI phủ lên rồi tan đi
-      if (jump) {
-        tl.set(jump, { yPercent: 0, opacity: 0 }, 0)
-          .to(jump, { opacity: 0.95, duration: 0.4, ease: "power2.out" }, 0)
-          .to(jump, { opacity: 0, duration: 0.8, ease: "power2.inOut" }, T + D * 0.5)
-          .set(jump, { yPercent: 100 }, T + D * 0.5 + 0.8);
-      }
-
-      // 5) Dải sáng bám đúng mép vén
-      if (wipe) {
-        tl.fromTo(wipe,
-          { yPercent: dir > 0 ? 100 : -100, scaleY: dir > 0 ? 1 : -1, autoAlpha: 1 },
-          { yPercent: 0, duration: D, ease: "power3.inOut" }, T);
-        tl.to(wipe, { autoAlpha: 0, duration: 0.3, ease: "power1.out" }, T + D - 0.05);
-      }
-
-      // 6) Khối nội dung slide mới bay vào lần lượt khi mép vén đi được nửa đường
+      // 3) Từng khối nội dung bay vào lần lượt
       tl.to(inItems, {
         opacity: 1, x: 0, y: 0, scale: 1, filter: "blur(0px)",
-        duration: 1, ease: "power3.out", stagger: 0.09,
+        duration: 0.9, ease: "power3.out", stagger: 0.07,
         onComplete: () => { gsap.set(inItems, { clearProps: "filter" }); },
-      }, T + D * 0.4);
+      }, T + 0.1);
 
-      // Cho phép chuyển slide tiếp ngay khi slide mới đã lộ hết
-      tl.call(() => { busy.current = false; }, undefined, T + D);
+      // Cho phép chuyển slide tiếp khi slide mới đã gần hiện hết
+      tl.call(() => { busy.current = false; }, undefined, T + D * 0.8);
     });
   }, [n, ids]);
 
