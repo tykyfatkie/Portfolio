@@ -10,6 +10,7 @@ import "./styles/projects3d.css";
 import "./styles/palette.css";
 import "./styles/extras.css";
 import "./styles/contact.css";
+import "./styles/world.css";
 import App from "./App";
 
 createRoot(document.getElementById("root")!).render(
