@@ -39,7 +39,7 @@ const WorldScene = () => {
     const s = state.current;
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x050505, 0.017);
+    scene.fog = new THREE.FogExp2(0x050505, 0.024);
     const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 400);
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -49,8 +49,8 @@ const WorldScene = () => {
     const disposables: { dispose(): void }[] = [];
     function track<T extends { dispose(): void }>(d: T): T { disposables.push(d); return d; }
 
-    const mats = COLORS.map(c => track(new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false })));
-    const lineMats = COLORS.map(c => track(new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false })));
+    const mats = COLORS.map(c => track(new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false })));
+    const lineMats = COLORS.map(c => track(new THREE.LineBasicMaterial({ color: c, transparent: true, opacity: 0.36, blending: THREE.AdditiveBlending, depthWrite: false })));
 
     // ── đường hầm vòng neon dọc suốt hành trình ──
     const ringGeo = track(new THREE.TorusGeometry(26, 0.06, 6, 96));
@@ -140,7 +140,7 @@ const WorldScene = () => {
 
       rings.forEach((r, i) => { r.rotation.z += dt * 0.08 * (i % 2 ? 1 : -1); r.scale.setScalar(1 + pulse * 0.08); });
       spinners.forEach(({ m, v }) => { m.rotation.x += v.x * dt; m.rotation.y += v.y * dt; m.scale.setScalar(1 + pulse * 0.1); });
-      mats.forEach(m => { m.opacity = 0.5 + pulse * 0.4; });
+      mats.forEach(m => { m.opacity = 0.3 + pulse * 0.25; });
 
       renderer.render(scene, camera);
     };
