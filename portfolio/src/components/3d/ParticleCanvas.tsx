@@ -90,6 +90,7 @@ const ParticleCanvas = () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("resize", onResize);
       renderer.dispose();
+      renderer.forceContextLoss();   // trả WebGL context cho trình duyệt (dispose() không làm việc này)
       geo.dispose();
       mat.dispose();
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);

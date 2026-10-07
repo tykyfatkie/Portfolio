@@ -1,9 +1,8 @@
 import {
-  Children, Suspense, createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState,
+  Children, createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState,
   type ReactNode, type RefObject,
 } from "react";
 import { gsap } from "gsap";
-import { Warp } from "../3d/Backdrops";
 import { playWhoosh } from "../../hooks/useSound";
 
 /**
@@ -43,7 +42,6 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
   const lastWheel = useRef(0);
   const deckRef = useRef<HTMLElement>(null);
   const wipeRef = useRef<HTMLDivElement>(null);
-  const jumpRef = useRef<HTMLDivElement>(null);
 
   const getSlides = () => Array.from(deckRef.current?.children ?? []) as HTMLElement[];
 
@@ -53,7 +51,6 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
   // Đặt vị trí ban đầu trước khi paint; gsap.context để dọn toàn bộ tween khi unmount
   useLayoutEffect(() => {
     ctx.current = gsap.context(() => {}, deckRef);
-    if (jumpRef.current) gsap.set(jumpRef.current, { yPercent: 100, opacity: 0 });
     getSlides().forEach((el, i) => {
       gsap.set(el, { yPercent: i === cur.current ? 0 : 100, autoAlpha: i === cur.current ? 1 : 0, zIndex: i === cur.current ? 2 : 1 });
     });
@@ -207,13 +204,6 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
   return (
     <DeckContext.Provider value={{ index, ids, goTo, deckRef }}>
       {children}
-
-      {/* Overlay hyperspace (ThreeUI WarpField) — nằm ngoài màn hình khi nghỉ để tự dừng render */}
-      <div ref={jumpRef} className="deck-jump" aria-hidden>
-        <Suspense fallback={null}>
-          <Warp variant="hyperspace" speed={14} streakOpacity={0.9} tileOpacity={0} brightness={1.1} />
-        </Suspense>
-      </div>
 
       <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
         <defs>

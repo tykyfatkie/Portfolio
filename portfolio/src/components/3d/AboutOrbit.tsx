@@ -113,6 +113,7 @@ const AboutOrbit = () => {
       io.disconnect();
       disposables.forEach(d => d.dispose());
       renderer.dispose();
+      renderer.forceContextLoss();   // trả WebGL context cho trình duyệt (dispose() không làm việc này)
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
   }, []);

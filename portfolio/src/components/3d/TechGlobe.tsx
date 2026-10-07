@@ -175,6 +175,7 @@ const TechGlobe = ({ active }: Props) => {
       sprites.forEach(({ mat, tex }) => { mat.dispose(); tex.dispose(); });
       disposables.forEach(d => d.dispose());
       renderer.dispose();
+      renderer.forceContextLoss();   // trả WebGL context cho trình duyệt (dispose() không làm việc này)
       if (mount.contains(el)) mount.removeChild(el);
     };
   }, []);

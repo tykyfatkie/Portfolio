@@ -254,6 +254,7 @@ const ContactGlobe = ({ handle }: { handle: MutableRefObject<GlobeHandle | null>
       handle.current = null;
       disposables.forEach(d => d.dispose());
       renderer.dispose();
+      renderer.forceContextLoss();   // trả WebGL context cho trình duyệt (dispose() không làm việc này)
       if (mount.contains(el)) mount.removeChild(el);
     };
   }, [handle]);

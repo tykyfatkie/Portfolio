@@ -222,6 +222,7 @@ const CommitCity = () => {
       geo.dispose(); mat.dispose(); mesh.dispose(); floor.geometry.dispose(); (floor.material as THREE.Material).dispose();
       grid.geometry.dispose(); (grid.material as THREE.Material).dispose();
       renderer.dispose();
+      renderer.forceContextLoss();   // trả WebGL context cho trình duyệt (dispose() không làm việc này)
       if (mount.contains(el)) mount.removeChild(el);
     };
   }, []);

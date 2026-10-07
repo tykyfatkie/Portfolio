@@ -175,6 +175,7 @@ const Title3D = () => {
       disposables.forEach(d => d.dispose());
       envTex.dispose(); pmrem.dispose();
       renderer.dispose();
+      renderer.forceContextLoss();   // trả WebGL context cho trình duyệt (dispose() không làm việc này)
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
   }, []);

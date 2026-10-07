@@ -89,6 +89,7 @@ const FloatingShapes = () => {
       geos.forEach(g => g.dispose());
       mats.forEach(m => m.dispose());
       renderer.dispose();
+      renderer.forceContextLoss();   // trả WebGL context cho trình duyệt (dispose() không làm việc này)
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
   }, []);
