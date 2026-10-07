@@ -95,7 +95,7 @@ const HeroSection = () => {
       <div className="hero-floor" />
 
       {/* Lớp 3: khối kim loại lỏng 3D (ThreeUI LiquidForm), trôi theo chuột */}
-      <div ref={blobRef} style={{ position: "absolute", inset: "-3%", zIndex: 1, pointerEvents: "none" }}>
+      <div ref={blobRef} className="hero-blob" style={{ position: "absolute", inset: "-3%", zIndex: 1, pointerEvents: "none" }}>
         <Backdrop kind="liquid" opacity={0.55} blend="screen" vignette={false} />
       </div>
 
