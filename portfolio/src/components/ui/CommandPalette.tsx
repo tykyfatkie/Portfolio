@@ -110,7 +110,7 @@ const CommandPalette = () => {
   let lastGroup = "";
   return (
     <div className="cp" onMouseDown={e => { if (e.target === e.currentTarget) hide(); }}>
-      <div className="cp__panel" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div className="cp__panel" data-modal-panel role="dialog" aria-modal="true" aria-label="Command palette">
         <div className="cp__input">
           <span className="cp__prompt">&gt;</span>
           <input
