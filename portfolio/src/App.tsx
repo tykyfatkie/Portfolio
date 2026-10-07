@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import Navbar from "./components/ui/Navbar";
 import HeroSection from "./components/sections/HeroSection";
 import AboutSection from "./components/sections/AboutSection";
@@ -10,6 +10,7 @@ import ScrollProgress from "./components/ui/ScrollProgress";
 import Preloader from "./components/ui/Preloader";
 import CommandPalette from "./components/ui/CommandPalette";
 import FpsMeter from "./components/ui/FpsMeter";
+const WorldScene = lazy(() => import("./components/3d/WorldScene"));
 import { DeckProvider, SlideDeck } from "./components/ui/SlideDeck";
 
 const SLIDE_IDS    = ["hero", "about", "skills", "projects", "contact"];
@@ -132,6 +133,7 @@ const Main = () => {
       <div className="noise" />
       <ScrollProgress />
       <Navbar />
+      <Suspense fallback={null}><WorldScene /></Suspense>
       <SlideDeck>
         <HeroSection />
         <AboutSection />
