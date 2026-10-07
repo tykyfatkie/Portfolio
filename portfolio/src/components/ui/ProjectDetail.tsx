@@ -18,6 +18,7 @@ const roleOf = (tag: string) => tag.split("·")[1]?.trim() ?? tag;
 const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
   const backRef  = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const closing = useRef(false);
 
 
@@ -58,6 +59,15 @@ const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
     gsap.to(back, { opacity: 0, duration: 0.55, delay: 0.1 });
   };
 
+  // Lăn chuột trên phần hình (không tự cuộn) → cuộn phần nội dung bên cạnh
+  useEffect(() => {
+    const panel = panelRef.current, body = bodyRef.current;
+    if (!panel || !body) return;
+    const onWheel = (e: WheelEvent) => { if (!body.contains(e.target as Node)) body.scrollTop += e.deltaY; };
+    panel.addEventListener("wheel", onWheel, { passive: true });
+    return () => panel.removeEventListener("wheel", onWheel);
+  }, []);
+
   // Phím: Esc đóng, ←/→ chuyển dự án
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -75,7 +85,7 @@ const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
   return (
     <div className="pd" style={style}>
       <div ref={backRef} className="pd__back" onClick={close} />
-      <div ref={panelRef} className="pd__panel" role="dialog" aria-modal="true" aria-label={project.title}>
+      <div ref={panelRef} data-modal-panel className="pd__panel" role="dialog" aria-modal="true" aria-label={project.title}>
         <button className="pd__close" onClick={close} aria-label="Close" data-hover>✕ <span>ESC</span></button>
 
         <div className="pd__visual">
@@ -84,7 +94,7 @@ const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
           <span className="pd__team" data-pd>TEAM · {project.teamSize}</span>
         </div>
 
-        <div className="pd__body">
+        <div ref={bodyRef} className="pd__body">
           <div className="pd__tag" data-pd>{project.number} / {project.tag}</div>
           <h3 className="pd__title" data-pd>{project.title}</h3>
           <p className="pd__desc" data-pd>{project.description}</p>

@@ -154,7 +154,7 @@
 .pd__visual-fade { position: absolute; inset: 0; background: linear-gradient(to right, transparent 55%, #090909 100%), linear-gradient(to top, rgba(8, 8, 8, .6), transparent 40%); pointer-events: none; }
 .pd__team { position: absolute; left: 1.2rem; bottom: 1.2rem; font-family: var(--font-mono); font-size: .62rem; letter-spacing: .2em; color: var(--c); }
 .pd__ph span { font-size: 16rem; }
-.pd__body { display: flex; flex-direction: column; justify-content: center; gap: 1.1rem; padding: 2.6rem 2.6rem 2.2rem 1.6rem; min-width: 0; }
+.pd__body { display: flex; flex-direction: column; justify-content: safe center; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--c) 55%, transparent) transparent; gap: 1.1rem; padding: 2.6rem 2.6rem 2.2rem 1.6rem; min-width: 0; }
 .pd__tag { font-family: var(--font-mono); font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; color: var(--c); }
 .pd__title { font-family: var(--font-display); font-size: clamp(2.2rem, 4.2vw, 3.6rem); line-height: .95; letter-spacing: .03em; color: #fff; }
 .pd__desc { font-size: .92rem; line-height: 1.85; color: #9a9a9a; font-weight: 300; }
@@ -178,6 +178,7 @@
   .pj-stage { height: 400px; }
   .pd__panel { grid-template-columns: 1fr; overflow-y: auto; }
   .pd__visual { min-height: 200px; }
+  .pd__body { overflow: visible; }
 }
 
 /* ── Mô hình thiết bị 3D trong khung chi tiết ── */

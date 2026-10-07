@@ -166,7 +166,7 @@ export const DeckProvider = ({ ids, labels, children }: ProviderProps) => {
     const modalOpen = () => !!document.body.dataset.modal;
 
     const onWheel = (e: WheelEvent) => {
-      if (modalOpen()) { e.preventDefault(); return; }
+      if (modalOpen()) { if (!(e.target as Element | null)?.closest?.("[data-modal-panel]")) e.preventDefault(); return; }   // trong panel thì để nó tự cuộn
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || Math.abs(e.deltaY) < 4) return;
       const dir = e.deltaY > 0 ? 1 : -1;
       const now = performance.now();
