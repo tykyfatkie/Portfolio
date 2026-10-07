@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
 import { preloadAll, type TaskDetail } from "../../lib/preload";
 import LoaderParticles, { type ParticlesHandle } from "./LoaderParticles";
 
@@ -65,8 +64,15 @@ const Preloader = ({ onReady, onDone }: Props) => {
       // 1) Giữ ở 99%: dựng trang chính ngầm phía sau. Phần giật do dựng 3D rơi vào đoạn này,
       //    không rơi vào outro.
       setStage("finalizing");
+      const titleReady = new Promise<void>(res => {
+        const done = () => res();
+        window.addEventListener("hero:title-ready", done, { once: true });
+        setTimeout(done, 5000);                     // chữ 3D lỗi/chậm → vẫn tiếp tục với bản DOM
+      });
       onReady();
-      await waitSmooth(900, 6000);
+      await titleReady;                             // chờ chữ 3D dựng xong hẳn (hình học + shader)
+      if (cancelled) return;
+      await waitSmooth(600, 4000);
       if (cancelled) return;
 
       // 2) Trang đã sẵn sàng và chạy mượt → mới nhảy lên 100%, các hạt hội tụ nốt
@@ -81,16 +87,29 @@ const Preloader = ({ onReady, onDone }: Props) => {
       // 3) Outro: các hạt biến hình thành đúng tên "NGUYEN TANG TAI PHAT" ở hero (đang nằm sẵn dưới màn hình loading),
       //    rồi màn hình tách đôi để lộ chữ thật khớp đúng vị trí và các hạt tan đi.
       //    Nếu không tìm thấy tên ở hero thì dùng hiệu ứng nổ tung làm dự phương.
-      gsap.to(uiRef.current, { opacity: 0, y: 24, duration: 0.5, ease: "power3.in" });
-      const morphed = (await particles.current?.morph()) ?? false;
+      // Dùng Web Animations: chạy trên luồng compositor nên vẫn mượt dù luồng chính đang bận dựng trang chính phía sau
+      const play = (el: HTMLElement | null, kf: Keyframe[], duration: number, easing: string, delay = 0) =>
+        el?.animate(kf, { duration, easing, delay, fill: "forwards" });
+      const EXPO = "cubic-bezier(0.87, 0, 0.13, 1)", IN = "cubic-bezier(0.55, 0.055, 0.675, 0.19)";
+      play(uiRef.current, [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(24px)" }], 500, IN);
+      // Tính điểm đích (đồng bộ, lúc hero còn đúng chỗ), rồi tạm dời trang chính ra khỏi khung nhìn để các canvas WebGL của hero
+      // tự dừng vẽ (IntersectionObserver) → dồn GPU cho hiệu ứng hạt. Đưa về lại ngay trước khi màn hình mở.
+      const morphP = particles.current?.morph() ?? Promise.resolve(false);
+      const deck = document.querySelector<HTMLElement>(".deck");
+      if (deck) deck.style.transform = "translateY(110vh)";
+      const morphed = await morphP;
+      if (deck) deck.style.transform = "";
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));   // cho hero vẽ lại một khung mới
       if (cancelled) return;
       if (!morphed) particles.current?.burst();
       else await new Promise(r => setTimeout(r, 250));
       particles.current?.fade(morphed ? 800 : 600);
-      gsap.timeline({ onComplete: onDone })
-        .to(cornerRef.current, { opacity: 0, scale: 1.12, duration: 0.7, ease: "power3.in" }, 0)
-        .to(topRef.current, { yPercent: -100, duration: 1.1, ease: "expo.inOut" }, morphed ? 0.05 : 0.35)
-        .to(botRef.current, { yPercent: 100, duration: 1.1, ease: "expo.inOut" }, morphed ? 0.05 : 0.35);
+      const gap = morphed ? 50 : 350;
+      play(cornerRef.current, [{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(1.12)" }], 700, IN);
+      const top = play(topRef.current, [{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], 1100, EXPO, gap);
+      const bot = play(botRef.current, [{ transform: "translateY(0)" }, { transform: "translateY(100%)" }], 1100, EXPO, gap);
+      await Promise.all([top?.finished, bot?.finished]);
+      if (!cancelled) onDone();
     });
 
     return () => { cancelled = true; cancelAnimationFrame(raf); };
