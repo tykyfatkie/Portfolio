@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useBackgroundMusic } from "../../hooks/useBackgroundMusic";
 import { bootAudio } from "../../hooks/useSound";
-import { ensureAnalyser, level } from "../../lib/music";
+import { ensureAnalyser, level, readKick } from "../../lib/music";
 import { pushBeat } from "../../lib/beat";
 
 const BARS = 24;
@@ -19,7 +19,7 @@ const AudioWave = () => {
     const cur = new Array(BARS).fill(REST);
     const data = new Uint8Array(32);
     const root = document.documentElement;
-    let raf = 0, avgBass = 0, peakBass = 0.12, lastHit = 0;
+    let raf = 0, avgKick = 0, peakKick = 0.1, lastHit = 0;
 
     const paint = () => bars.current.forEach((el, i) => { if (el) el.style.transform = `scaleY(${cur[i]})`; });
 
@@ -57,13 +57,14 @@ const AudioWave = () => {
         level.bass = 0.3 + 0.3 * Math.abs(Math.sin(t * 2.2));
         level.value = level.bass * 0.7;
       }
-      // Nhịp bass (tự thích nghi theo bài): chuẩn hoá bass theo đỉnh gần đây, rồi chớp khi vọt lên so với mức trung bình ngắn hạn.
-      // Nhờ chuẩn hoá nên đoạn bass dày/đều hay đoạn nhỏ tiếng vẫn bắt được nhịp (không phụ thuộc ngưỡng cố định).
+      // Nhịp bass: lấy năng lượng thật ở 40–150 Hz (analyser riêng, ít làm mượt), chuẩn hoá theo đỉnh gần đây của chính bài nhạc,
+      // rồi chớp khi vọt lên rõ so với mức trung bình ngắn hạn. Chuẩn hoá nên bài nhỏ tiếng hay bass dày đều vẫn bắt được nhịp.
       const nowMs = performance.now();
-      peakBass = Math.max(level.bass, peakBass * 0.9985, 0.12);
-      const nb = level.bass / peakBass;
-      avgBass += (nb - avgBass) * 0.05;
-      if (an && nb > 0.45 && nb - avgBass > 0.07 && nowMs - lastHit > 130) { level.flash = 1; lastHit = nowMs; }
+      const kick = an ? readKick() : 0;
+      peakKick = Math.max(kick, peakKick * 0.9985, 0.1);
+      const nk = kick / peakKick;
+      avgKick += (nk - avgKick) * 0.12;
+      if (an && nk > 0.5 && nk - avgKick > 0.05 && nowMs - lastHit > 130) { level.flash = 1; lastHit = nowMs; }
       else level.flash *= 0.86;
       if (level.flash < 0.01) level.flash = 0;
       root.style.setProperty("--flash", level.flash.toFixed(3));
