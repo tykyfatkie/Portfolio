@@ -1,7 +1,9 @@
 /* ============================================================
    WORLD — thế giới 3D dùng chung nằm sau các slide
    ============================================================ */
-.world { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.world { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .8; }
+/* tối mờ ở giữa để nội dung dễ đọc, rìa vẫn giữ hiệu ứng */
+.world::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 62% at 50% 52%, rgba(5, 5, 5, .62) 0%, rgba(5, 5, 5, .32) 55%, transparent 85%); }
 .world canvas { display: block; }
 
 /* Slide (trừ hero) và deck trong suốt để thế giới 3D lộ ra phía sau nội dung */
