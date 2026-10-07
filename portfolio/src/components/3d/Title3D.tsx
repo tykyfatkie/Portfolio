@@ -113,6 +113,10 @@ const Title3D = () => {
       });
 
       h1.classList.add("title3d-on");                           // ẩn bản DOM, hiện bản 3D
+      // biên dịch shader + vẽ một khung ngay bây giờ (lúc còn màn hình loading) để không giật khi màn hình mở
+      renderer.compile(scene, camera);
+      renderer.render(scene, camera);
+      window.dispatchEvent(new Event("hero:title-ready"));
 
       if (animate) {
         // chữ lao vào từ chiều sâu, lần lượt từ trái sang phải
@@ -125,7 +129,8 @@ const Title3D = () => {
       }
     };
 
-    build(true).catch(() => { /* lỗi font/hình học → giữ nguyên bản DOM */ });
+    // Khi đang có màn hình loading thì hạt biến hình đã là màn "xuất hiện" của tên → không chạy hiệu ứng bay vào nữa
+    build(!document.querySelector(".preloader")).catch(() => { window.dispatchEvent(new Event("hero:title-ready")); /* lỗi font/hình học → giữ bản DOM */ });
 
     let resizeTimer = 0;
     const onResize = () => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(() => { build(false).catch(() => {}); }, 250); };
