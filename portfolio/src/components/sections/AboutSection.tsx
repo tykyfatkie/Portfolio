@@ -5,6 +5,7 @@ import Tilt from "../ui/Tilt";
 import ScrambleText from "../ui/ScrambleText";
 import ProfileCard3D from "../ui/ProfileCard3D";
 import Backdrop from "../3d/Backdrops";
+import Defer from "../ui/Defer";
 
 const CommitCity = lazy(() => import("../3d/CommitCity"));
 
@@ -166,7 +167,7 @@ const AboutSection = () => (
         <span className="about-journey-line" />
       </div>
       <div data-fx="zoom">
-        <Suspense fallback={<div className="cc__canvas" />}><CommitCity /></Suspense>
+        <Defer ms={1900} fallback={<div className="cc__canvas" />}><Suspense fallback={<div className="cc__canvas" />}><CommitCity /></Suspense></Defer>
       </div>
     </div>
   </section>
