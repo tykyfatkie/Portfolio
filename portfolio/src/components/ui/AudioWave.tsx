@@ -66,42 +66,6 @@ const AudioWave = () => {
       if (an && nb > 0.45 && nb - avgBass > 0.07 && nowMs - lastHit > 130) { level.flash = 1; lastHit = nowMs; }
       else level.flash *= 0.86;
       if (level.flash < 0.01) level.flash = 0;
-      root.style.setProperty("--flash", "0");
-      level.flash = 0;
-      pushBeat(0);
-      return;
-    }
-
-    const tick = () => {
-      const an = ensureAnalyser();
-      const t = performance.now() / 1000;
-      if (an) an.getByteFrequencyData(data);
-
-      for (let i = 0; i < BARS; i++) {
-        let target: number;
-        if (an) {
-          const bin = Math.min(31, Math.floor(Math.pow(i / (BARS - 1), 1.5) * 22) + 1);
-          target = REST + (data[bin] / 255) * (1 - REST);
-        } else {
-          target = 0.25 + 0.5 * Math.abs(Math.sin(t * 3 + i * 0.8)); // chưa nối được analyser → sóng giả
-        }
-        cur[i] += (target - cur[i]) * 0.35;
-      }
-      paint();
-
-      if (an) {
-        level.bass = (data[1] + data[2] + data[3] + data[4]) / (4 * 255);
-        level.value = data.reduce((a, b) => a + b, 0) / (data.length * 255);
-      } else {
-        level.bass = 0.3 + 0.3 * Math.abs(Math.sin(t * 2.2));
-        level.value = level.bass * 0.7;
-      }
-      // Nhịp bass: bass vọt lên rõ so với mức trung bình gần đây → chớp sáng, rồi tắt dần (~0.2 s)
-      const nowMs = performance.now();
-      avgBass += (level.bass - avgBass) * 0.06;
-      if (an && level.bass > 0.3 && level.bass > avgBass + 0.1 && nowMs - lastHit > 140) { level.flash = 1; lastHit = nowMs; }
-      else level.flash *= 0.86;
-      if (level.flash < 0.01) level.flash = 0;
       root.style.setProperty("--flash", level.flash.toFixed(3));
       root.style.setProperty("--beat", level.bass.toFixed(3));
       pushBeat(level.bass);
