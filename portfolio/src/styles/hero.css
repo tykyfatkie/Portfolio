@@ -102,3 +102,6 @@
 /* Khi bản chữ 3D (Three.js) đã sẵn sàng thì ẩn bản DOM; vẫn giữ bố cục để chữ 3D và hiệu ứng loading khớp vị trí */
 .xt-title.title3d-on .xt-front,
 .xt-title.title3d-on .xt-back { visibility: hidden; }
+
+/* Khối kim loại lỏng "đập" theo bass bằng CSS (không đổi tham số WebGL nên không bao giờ giật) */
+.hero-blob .backdrop { transform: scale(calc(1 + var(--beat, 0) * 0.06)); transition: transform .12s ease-out; }
