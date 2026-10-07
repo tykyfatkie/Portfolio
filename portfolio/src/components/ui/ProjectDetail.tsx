@@ -1,4 +1,5 @@
 import { useEffect, useRef, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { gsap } from "gsap";
 import type { Project } from "../../data/projects";
 import { playClose, playOpen, playTick } from "../../hooks/useSound";
@@ -82,7 +83,8 @@ const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
 
   const style = { "--c": project.color } as CSSProperties;
 
-  return (
+  // Render ra thẳng <body>: nằm trong section/slide thì bị kẹt trong stacking context của slide → thanh menu vẽ đè lên khung
+  return createPortal(
     <div className="pd" style={style}>
       <div ref={backRef} className="pd__back" onClick={close} />
       <div ref={panelRef} data-modal-panel className="pd__panel" role="dialog" aria-modal="true" aria-label={project.title}>
@@ -119,7 +121,8 @@ const ProjectDetail = ({ project, fromRect, onNavigate, onClose }: Props) => {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 
