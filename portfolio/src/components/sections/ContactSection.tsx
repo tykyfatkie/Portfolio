@@ -1,6 +1,7 @@
 import { lazy, Suspense, useRef, useState, type FormEvent } from "react";
 import ScrambleText from "../ui/ScrambleText";
 import Backdrop from "../3d/Backdrops";
+import Defer from "../ui/Defer";
 import type { GlobeHandle } from "../3d/ContactGlobe";
 import { playClick, playClose, playOpen } from "../../hooks/useSound";
 
@@ -78,9 +79,11 @@ const ContactSection = () => {
         <div className="ct-grid">
           {/* Địa cầu hologram */}
           <div data-fx="zoom" className="ct-globe">
-            <Suspense fallback={<div className="contact-globe" />}>
-              <ContactGlobe handle={globe} />
-            </Suspense>
+            <Defer ms={2200} fallback={<div className="contact-globe" />}>
+              <Suspense fallback={<div className="contact-globe" />}>
+                <ContactGlobe handle={globe} />
+              </Suspense>
+            </Defer>
             <p className="ct-globe__hint">◐ drag to rotate · signals travel from Ho Chi Minh City</p>
           </div>
 
