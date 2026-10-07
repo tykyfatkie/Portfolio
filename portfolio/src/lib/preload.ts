@@ -77,6 +77,7 @@ const tasks: Task[] = [
         () => import("../components/3d/ContactGlobe"),
         () => import("../components/3d/CommitCity"),
         () => import("../components/3d/Title3D"),
+        () => import("../components/3d/WorldScene"),
         () => import("../components/3d/AboutOrbit"),
         () => import("../components/3d/HeroShapes"),
       ];
