@@ -10,6 +10,8 @@ import ScrollProgress from "./components/ui/ScrollProgress";
 import Preloader from "./components/ui/Preloader";
 import CommandPalette from "./components/ui/CommandPalette";
 import FpsMeter from "./components/ui/FpsMeter";
+import { markSettled } from "./lib/settled";
+import Defer from "./components/ui/Defer";
 const WorldScene = lazy(() => import("./components/3d/WorldScene"));
 import { DeckProvider, SlideDeck } from "./components/ui/SlideDeck";
 
@@ -133,7 +135,7 @@ const Main = () => {
       <div className="noise" />
       <ScrollProgress />
       <Navbar />
-      <Suspense fallback={null}><WorldScene /></Suspense>
+      <Defer ms={800}><Suspense fallback={null}><WorldScene /></Suspense></Defer>
       <SlideDeck>
         <HeroSection />
         <AboutSection />
@@ -155,7 +157,7 @@ const App = () => {
   const [ready, setReady]   = useState(false); // trang chính đã mount
   const [loading, setLoading] = useState(true); // màn hình loading còn hiện
   const onReady = useCallback(() => setReady(true), []);
-  const onDone  = useCallback(() => setLoading(false), []);
+  const onDone  = useCallback(() => { setLoading(false); markSettled(); }, []);
 
   return (
     <>
