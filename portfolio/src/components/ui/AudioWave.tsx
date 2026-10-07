@@ -19,7 +19,7 @@ const AudioWave = () => {
     const cur = new Array(BARS).fill(REST);
     const data = new Uint8Array(32);
     const root = document.documentElement;
-    let raf = 0, avgBass = 0, lastHit = 0;
+    let raf = 0, avgBass = 0, peakBass = 0.12, lastHit = 0;
 
     const paint = () => bars.current.forEach((el, i) => { if (el) el.style.transform = `scaleY(${cur[i]})`; });
 
@@ -27,6 +27,45 @@ const AudioWave = () => {
       cur.fill(REST);
       paint();
       root.style.setProperty("--beat", "0");
+      root.style.setProperty("--flash", "0");
+      level.flash = 0;
+      pushBeat(0);
+      return;
+    }
+
+    const tick = () => {
+      const an = ensureAnalyser();
+      const t = performance.now() / 1000;
+      if (an) an.getByteFrequencyData(data);
+
+      for (let i = 0; i < BARS; i++) {
+        let target: number;
+        if (an) {
+          const bin = Math.min(31, Math.floor(Math.pow(i / (BARS - 1), 1.5) * 22) + 1);
+          target = REST + (data[bin] / 255) * (1 - REST);
+        } else {
+          target = 0.25 + 0.5 * Math.abs(Math.sin(t * 3 + i * 0.8)); // chưa nối được analyser → sóng giả
+        }
+        cur[i] += (target - cur[i]) * 0.35;
+      }
+      paint();
+
+      if (an) {
+        level.bass = (data[1] + data[2] + data[3] + data[4]) / (4 * 255);
+        level.value = data.reduce((a, b) => a + b, 0) / (data.length * 255);
+      } else {
+        level.bass = 0.3 + 0.3 * Math.abs(Math.sin(t * 2.2));
+        level.value = level.bass * 0.7;
+      }
+      // Nhịp bass (tự thích nghi theo bài): chuẩn hoá bass theo đỉnh gần đây, rồi chớp khi vọt lên so với mức trung bình ngắn hạn.
+      // Nhờ chuẩn hoá nên đoạn bass dày/đều hay đoạn nhỏ tiếng vẫn bắt được nhịp (không phụ thuộc ngưỡng cố định).
+      const nowMs = performance.now();
+      peakBass = Math.max(level.bass, peakBass * 0.9985, 0.12);
+      const nb = level.bass / peakBass;
+      avgBass += (nb - avgBass) * 0.05;
+      if (an && nb > 0.45 && nb - avgBass > 0.07 && nowMs - lastHit > 130) { level.flash = 1; lastHit = nowMs; }
+      else level.flash *= 0.86;
+      if (level.flash < 0.01) level.flash = 0;
       root.style.setProperty("--flash", "0");
       level.flash = 0;
       pushBeat(0);
