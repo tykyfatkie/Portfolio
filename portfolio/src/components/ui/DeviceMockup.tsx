@@ -3,7 +3,7 @@ import { gsap } from "gsap";
 import ProjectMedia from "./ProjectMedia";
 import type { Project } from "../../data/projects";
 
-/** Mô hình thiết bị 3D bằng CSS (laptop cho web, điện thoại cho app), xoay theo chuột, màn hình chứa ảnh dự án. */
+/** Mô hình thiết bị 3D bằng CSS (laptop cho web, điện thoại cho app), xoay theo chuột, màn hình phát video dự án (.mp4, nếu có; không thì ảnh). */
 const DeviceMockup = ({ project }: { project: Project }) => {
   const stage = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ const DeviceMockup = ({ project }: { project: Project }) => {
     return () => { st.removeEventListener("pointermove", move); st.removeEventListener("pointerleave", leave); };
   }, [phone, project.id]);
 
-  const screen = <ProjectMedia project={project} placeholder="dm-ph" />;
+  const screen = <ProjectMedia project={project} placeholder="dm-ph" video />;
 
   return (
     <div ref={stage} className="dm" data-cursor="TILT">
