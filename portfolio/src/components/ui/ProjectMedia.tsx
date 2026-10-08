@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Project } from "../../data/projects";
 
-/** Ưu tiên video cùng tên (đuôi .mp4); không có video thì dùng ảnh .png; không có ảnh thì hiện khung thay thế. */
-const ProjectMedia = ({ project, placeholder }: { project: Project; placeholder: "pj-ph" | "dm-ph" }) => {
+/**
+ * Thẻ bên ngoài: luôn dùng ảnh .png. Khung chi tiết (video = true): ưu tiên video cùng tên (đuôi .mp4), ảnh .png làm poster
+ * trong lúc video tải; không có video thì dùng ảnh; không có ảnh thì hiện khung thay thế.
+ */
+const ProjectMedia = ({ project, placeholder, video: wantVideo = false }: { project: Project; placeholder: "pj-ph" | "dm-ph"; video?: boolean }) => {
   const [videoOk, setVideoOk] = useState(true);
   const [imgOk, setImgOk] = useState(true);
 
@@ -11,12 +14,12 @@ const ProjectMedia = ({ project, placeholder }: { project: Project; placeholder:
   const ph = <div className={placeholder}><span>{project.number}</span></div>;
   if (!project.image) return ph;
 
-  const video = project.image.replace(/\.[^./]+$/, ".mp4");
+  const videoSrc = project.image.replace(/\.[^./]+$/, ".mp4");
 
-  if (videoOk) {
+  if (wantVideo && videoOk) {
     return (
       <video
-        key={video} src={video}
+        key={videoSrc} src={videoSrc} poster={project.image}
         autoPlay muted loop playsInline preload="auto" draggable={false}
         onError={() => setVideoOk(false)}
       />
